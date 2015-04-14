@@ -71,7 +71,12 @@ def extract_data(req):
 		image = w(".small_main>img").eq(0).attr("src")
 		if image:
 			data["image"] = domain + image
-		bike_description = 
+		bike_descriptions = w("td.column_main>li")
+		bike_text = str()
+		for description in bike_descriptions:
+			bike_text = bike_text + description.text.replace("\t", "") + ". "
+		data["bike_description"] = bike_text
+
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
 		return data
