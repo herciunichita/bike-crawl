@@ -26,7 +26,6 @@ def start_crawling(start_url, domain):
 		req = dict()
 
 		url = urls.popleft()
-
 		try:
 			res = session.request("GET", url, timeout=10, cookies = None, verify=False,
 				headers = {
