@@ -27,7 +27,7 @@ def start_crawling(start_url, domain):
 
 		url = urls.popleft()
 		try:
-			res = session.request("GET", url, timeout=10, cookies = None, verify=False,
+			res = session.request("GET", url, timeout=15, cookies = None, verify=False,
 				headers = {
 					"User-Agent":"Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.2.16) Gecko/20110319 Firefox/3.6.16",
 					"Accept-Language":"en-US,en;q=0.8,de-DE;q=0.6,de;q=0.4,en;q=0.2",
@@ -36,6 +36,7 @@ def start_crawling(start_url, domain):
 
 		except requests.exceptions.RequestException as ex:
 			print >>sys.stderr, ex
+			print >>sys.stderr, url
 			continue
 		
 		if res is None: continue	

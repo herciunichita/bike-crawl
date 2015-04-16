@@ -22,8 +22,9 @@ def extract_urls(req):
 
 	next_pages = w(".pag>li>a")
 	for next_page in next_pages:
-		if "Next" in next_page:
-			urls.add(next_page.attr("href"))
+		next_page_pq = w(next_page)
+		if "Next" in next_page_pq.text():
+			urls.add(next_page_pq.attr("href"))
 
 	bikes = w(".column1>li>h3>a")
 	for item in bikes:
@@ -41,11 +42,13 @@ def extract_data(req):
 	domain = 'http://www.jejamescycles.co.uk'
 	w = pq(req["html"])
 
-	is_bike = w(".zoomWindow")
+	is_bike = w(".product-info>h1>span")
 	if is_bike:
 		name = w(".product-info>h1>span")
+		data["provider_id"] = domain
 		if name:
-			data["name"] = name
+			data["name"] = name.text()
+		data["currency"] = "GBP"
 		image = w("a#large-image").attr("href")
 		if image:
 			data["image"] = image
@@ -56,22 +59,23 @@ def extract_data(req):
 			data["discounted_price"] = actual_price.group(1)
 			full_price = w("div.product-info span.rrp").text()
 			if full_price:
-				full_price = re.match(r".{6}(\d+\.\d+)", price)
-				data ["price"] = full_price.group(1)
+				full_price = re.match(r".{6}(\d+\.\d+)", full_price)
+				data["price"] = full_price.group(1)
 		else:
 			data["price"] = actual_price.group(1)
+			data["discounted_price"] = actual_price.group(1)
 		bike_type = w(".info-box>a").eq(1).text()
 		if bike_type:
 			data["type"] = bike_type
-		available = w(".item>tbody>tr>td>span>img").attr("src")
+		available = w("span[itemprop='availability'] img").attr("src")
 		if available:
-			if available == "http://www.jejamescycles.co.uk/images/zerostock.jpg"
+			if available == "http://www.jejamescycles.co.uk/images/zerostock.jpg":
 				data["availability"] = "O"
 			else:
 				data["availability"] = "A"
-		product_code = w(".item>tbody>tr>td").eq(0).text().strip()
+		product_code = w("input[name='prodID']").attr("value")
 		if product_code:
-			data["product_code"] = product_code
+			data["id"] = product_code
 		desc = w("div.description").text().strip()
 		if desc:
 			data["bike_description"] = desc
