@@ -47,14 +47,14 @@ def extract_data(req):
 			data["image"] = image
 		old_price = w(".price-box p.old-price span.price").text().strip()
 		if old_price:
-			actual_price = re.match(r"(\d+\.\d+\,\d+).*", price)
+			actual_price = re.match(r"(\d+\.*\d+\,\d+).*", price)
 			data["price"] = actual_price.group(1).replace(".", "").replace(",", ".")
 			disc_price = w(".price-box p.special-price span.price").text().strip()
-			disc_price = re.match(r"(\d+\.\d+\,\d+).*", disc_price)
+			disc_price = re.match(r"(\d+\.*\d+\,\d+).*", disc_price)
 			data["discounted_price"] = disc_price.group(1).replace(".", "").replace(",", ".")
 		else:
 			price = w(".price-box span.regular-price").text().strip()
-			price = re.match(r"(\d+\.\d+\,\d+).*", price)
+			price = re.match(r"(\d+\.*\d+\,\d+).*", price)
 			data["price"] = price.group(1).replace(".", "").replace(",", ".")
 			data["discounted_price"] = price.group(1).replace(".", "").replace(",", ".")
 
