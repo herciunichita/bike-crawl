@@ -3,6 +3,7 @@
 
 from pyquery import PyQuery as pq
 from bike import bike
+from copy import deepcopy
 import re
 
 def extract_urls(req):
@@ -32,7 +33,7 @@ def extract_urls(req):
 
 
 def extract_data(req):
-	data = bike
+	data = deepcopy(bike)
 	domain = 'http://www.bikesport.dk'
 	w = pq(req["html"])
 
@@ -65,7 +66,7 @@ def extract_data(req):
 			label = item.find('.label').text().strip()
 			item_data = item.find('.data').text().strip()
 			if label == "Producent":
-				data["bike_brand"] = item_data
+				data["brand"] = item_data
 			if label == "Varenummer":
 				data["id"] = item_data
 			if label == "Ramme":
@@ -75,7 +76,7 @@ def extract_data(req):
 		
 		desc = w("div.std").text().strip()
 		if desc:
-			data["bike_description"] = desc
+			data["description"] = desc
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
 		return data

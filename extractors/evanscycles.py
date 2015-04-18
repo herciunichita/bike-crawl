@@ -18,13 +18,15 @@ def extract_urls(req):
 	for item in cats:
 		item = pq(item)
 
-		urls.add(domain + item.attr("href").replace(domain, ""))
+		urls.add(domain + item.attr("href").replace("http://www.evanscycles.com", ""))
 
 	next_page = w(".next_page:first").attr("href")
 	if next_page:
-		urls.add(domain + next_page)
+		urls.add(domain + next_page.replace("http://www.evanscycles.com", ""))
+	urls = list(urls)
+	return [item.replace("http://www.evanscycles.comhttps://www.evanscycles.com", "http://www.evanscycles.com") for item in urls]
 		
-	return list(urls)
+	return urls
 
 
 def extract_data(req):
@@ -51,12 +53,13 @@ def extract_data(req):
 		data["discounted_price"] = data["price"]
 	data["id"] = w("div#product_code").text().replace("Product code:", "")
 	data["image"] = w("img#main_product_image").attr("src")
-	data["bike_description"] = w("div#product_description").text()
-	data["bike_brand"] = w("div#product_brand_logo a").attr("href").replace("/brands/", "")
+	data["description"] = w("div#product_description").text()
+	brand = w("div#product_brand_logo a").attr("href")
+	data["brand"] = brand.replace("/brands/", "") if brand else "N/A"
 	data["url"] = req["url"]
 	frame = w("dl#product_features dt:contains('Frame:')").attr("class")
 	if frame:
-		data["frame_name"] = w("dl#product_features dd."+ frame).text()
+		data["frame"] = w("dl#product_features dd."+ frame).text()
 
 	gears = w("dl#product_features dt:contains('Number of Gears:')").attr("class")
 	if gears:

@@ -13,7 +13,6 @@ def extract_urls(req):
         urls = set()
  
         w = pq(req["html"])
-	print req["url"]
 
 	more = w("div#infinitescroll span.btn.red")
 
@@ -50,7 +49,7 @@ def extract_data(req):
 	if not is_bike:
 		return {}
 
-	data["bike_brand"] = w("span.manufacturer").text()
+	data["brand"] = w("span.manufacturer").text()
 	data["name"] = w("h1.product-title meta[itemprop='name']").attr("content").strip()
 	data["id"] = w("body.artikel.artikel-detail").attr("data-vw-id")
 	data["currency"] = w("meta[itemprop='priceCurrency']").attr("content")
@@ -66,7 +65,7 @@ def extract_data(req):
 	available = w("div.btn.red.input input.buy")
 	data["availability"] = "A" if available else "O"
 
-	data["bike_description"] = w("div.default.articletext").text().strip()
+	data["description"] = w("div.default.articletext").text().strip()
 
 	year = w("div.variantMaster" + data["id"] + ".variantElement.variante div.additional-product-nos div.additional-product-no:contains('Model year:')").eq(0).text()
 	if year:
@@ -79,7 +78,7 @@ def extract_data(req):
 		value = item.find(".value").text()
 	
 		if name == "Frame":
-			data["frame_name"] = value
+			data["frame"] = value
 		elif name == "Wheelset":
 			data["wheelset"] = value
 		elif name == "Cassette":

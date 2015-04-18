@@ -63,11 +63,11 @@ def extract_data(req):
 			label = item.find('td.pd-datasheet-label').text().strip()
 			item_data = item.find('td').eq(1).text().strip()
 			if label == "Produktname:":
-				data["bike_brand"] = item_data
+				data["brand"] = item_data
 			if label == "Artikelnummer:":
 				data["id"] = item_data
 			if label == "Rahmen:":
-				data["frame_name"] = item_data
+				data["frame"] = item_data
 			if label == "Material:":
 				data["frame_material"] = item_data
 			if label == "Modelljahr:":
@@ -75,7 +75,7 @@ def extract_data(req):
 		
 		desc = w("div.pd-description").text().strip()
 		if desc:
-			data["bike_description"] = desc
+			data["description"] = desc
 		data["provider_id"] = domain
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:

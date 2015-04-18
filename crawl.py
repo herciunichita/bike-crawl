@@ -20,6 +20,8 @@ def input():
 def start_crawling(start_url, domain):
 	session = requests.Session()
 	urls = deque()
+	visited_urls = set()
+	visited_urls.add(start_url)
 	urls.append(start_url)
 	while urls:
 		data = {"domain": domain}
@@ -50,12 +52,20 @@ def start_crawling(start_url, domain):
 			print >>sys.stderr, ex
 			continue
 
-	
-		crawled = extractor.extract_urls(req)
+		try:
+		
+			crawled = extractor.extract_urls(req)
+		except:
+			continue
 		for page in crawled:
-			urls.append(page)
+			if page not in visited_urls:
+				visited_urls.add(page)
+				urls.append(page)
 
-		data["data"] = extractor.extract_data(req)
+		try:
+			data["data"] = extractor.extract_data(req)
+		except:
+			continue
 
 		if data["data"]:
 			sys.stdout.write(dumps(data) + "\n")

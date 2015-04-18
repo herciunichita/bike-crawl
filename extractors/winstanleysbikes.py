@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-
 from pyquery import PyQuery as pq
 from bike import bike
+from copy import deepcopy
 import re
 
 def extract_urls(req):
@@ -35,7 +35,7 @@ def extract_urls(req):
 
 
 def extract_data(req):
-	data = bike
+	data = deepcopy(bike)
 	domain = 'http://www.winstanleysbikes.co.uk'
 	w = pq(req["html"])
 
@@ -74,8 +74,9 @@ def extract_data(req):
 		bike_descriptions = w("td.column_main>li")
 		bike_text = str()
 		for description in bike_descriptions:
-			bike_text = bike_text + description.text.replace("\t", "") + ". "
-		data["bike_description"] = bike_text
+			description = pq(description)
+			bike_text = bike_text + description.text().replace("\t", "") + ". "
+		data["description"] = bike_text
 
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
