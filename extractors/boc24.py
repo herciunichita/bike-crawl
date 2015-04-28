@@ -25,16 +25,16 @@ def extract_urls(req):
 
 def extract_data(req):
 	data = deepcopy(bike)
-	domain = 'http://www.westbrookcycles.co.uk'
+	domain = 'http://www.boc24.de'
 	w = pq(req["html"])
 
-	is_bike = w("span#product_title")
+	is_bike = w("h1.prod-detail-title")
 	if is_bike:
-		name = w("span#product_title").text().strip()
+		name = w("h1.prod-detail-title").text().strip()
 		if name:
 			data["name"] = name
-		data["currency"] = "GBP"
-		image = w("a#product_zoom_image").attr("href")
+		data["currency"] = "EUR"
+		image = w("div.prod-image-box img").attr("src")
 		if image:
 			data["image"] = domain + image
 		old_price = w(".price-box p.old-price span.price").text().strip()
