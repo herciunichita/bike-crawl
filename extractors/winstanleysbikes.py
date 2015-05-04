@@ -11,21 +11,11 @@ def extract_urls(req):
 	domain = 'http://www.winstanleysbikes.co.uk'
 	w = pq(req["html"])
 
-	# ugly hack for testing purposes. avoid this 'if'
-	if req["url"] == "http://www.winstanleysbikes.co.uk/category/336/Bikes":
-		cats = w("table#catprods_hdr td.column_main a.links_main")
-
-		for item in cats:
-			item = pq(item)
-
-			urls.add(domain + item.attr("href"))
-		return list(urls)
-
 	next_page = w("input.buttonstyle[name='next']")
 	if next_page:
 		urls.add(next_page.attr("onclick").replace("parent.location.href=", "").replace("'", ""))
 
-	bikes = w("table#catprods_tbl a.links_main")
+	bikes = w("table#catprods_tbl td.column_main[align='center']>a.links_main")
 	for item in bikes:
 		item = pq(item)
 
@@ -36,6 +26,8 @@ def extract_urls(req):
 
 def extract_data(req):
 	data = deepcopy(bike)
+	availability = list()
+	sizes = list()
 	domain = 'http://www.winstanleysbikes.co.uk'
 	w = pq(req["html"])
 
@@ -46,28 +38,35 @@ def extract_data(req):
 			content = w(row)
 			if "Name" in content.children('td').eq(0).text():
 				data["name"] = content.children('td').eq(1).text()
+				data["brand"] = content.children('td').eq(1).text().split(" ")[0]
+				year = re.search(r"(\d{4})", content.children('td').eq(1).text())
+				if year:
+					data["year"] = year.group(1)
 			if "Availability" in content.children('td').eq(0).text():
 				if "In stock" in content.children('td').eq(1).text():
-					data["availability"] = "A"
+					availability.append("Available")
+				elif "Available to order":
+					availability.append("Available to Order")
 				else:
-					data["availability"] = "O"
+					availability.append("Out of Stock")
 			if "Size" in content.children('td').eq(0).text():
-				size = re.match(r"(\d+)(.+)", content.children('td').eq(1).text())
+				size = re.search(r"(\d+)(.*)", content.children('td').eq(1).text())
 				if size:
-					data["size_value"] = size.group(1)
-					if size.group(2) != "cm":
+					sizes.append(size.group(1))
+					if size.group(2).strip() != "cm":
 						data["size_measure"] = "inch"
+					else:
+						data["size_measure"] = "cm"
 			if "Product Code" in content.children('td').eq(0).text():
-				data["id"] = content.children('td').eq(1).text()
+				data["external_source_id"] = content.children('td').eq(1).text()
 			if "Price" in content.children('td').eq(0).text():
-				currency = re.match(r"(^[A-Z]{3}).*", content.children('td').eq(1).text())
-				if currency:
-					data["currency"] = currency.group(1)
-				price = re.match(r".*(\d{3,6}\.\d+),", content.children('td').eq(1).text())
+				data["currency"] = "GBP"
+				price = re.search(r"(\d{3,6}\.\d+).*", content.children('td').eq(1).text())
 				if price:
 					data["price"] = price.group(1)
 					data["discounted_price"] = price.group(1)
-		data["provider_id"] = domain
+		data["provider_store"] = domain
+		data["availability"] = dict(zip(sizes, availability))
 		image = w(".small_main>img").eq(0).attr("src")
 		if image:
 			data["image"] = domain + image
@@ -75,8 +74,15 @@ def extract_data(req):
 		bike_text = str()
 		for description in bike_descriptions:
 			description = pq(description)
+			if "Frame" in description.text():
+				data["frame"] = description.text().replace("\t", "").split(":")[1].strip()
+			if "Wheelset" in description.text():
+				data["wheelset"] = description.text().replace("\t", "").split(":")[1].strip()
+			if "Shifters" in description.text():
+				data["gearset"] = description.text().replace("\t", "").split(":")[1].strip()
 			bike_text = bike_text + description.text().replace("\t", "") + ". "
 		data["description"] = bike_text
+
 
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:

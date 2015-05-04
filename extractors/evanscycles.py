@@ -10,15 +10,8 @@ import re
 def extract_urls(req):
         urls = set()
 
-        domain = 'http://www.evanscycles.com'
-        w = pq(req["html"])
-
-	cats = w("h2 a")
-
-	for item in cats:
-		item = pq(item)
-
-		urls.add(domain + item.attr("href").replace("http://www.evanscycles.com", ""))
+    domain = 'http://www.evanscycles.com'
+    w = pq(req["html"])
 
 	next_page = w(".next_page:first").attr("href")
 	if next_page:
@@ -51,7 +44,7 @@ def extract_data(req):
                 data["price"] = price.group(2)
                 data["currency"] = price.group(1)
 		data["discounted_price"] = data["price"]
-	data["id"] = w("div#product_code").text().replace("Product code:", "")
+	data["external_source_id"] = w("div#product_code").text().replace("Product code:", "")
 	data["image"] = w("img#main_product_image").attr("src")
 	data["description"] = w("div#product_description").text()
 	brand = w("div#product_brand_logo a").attr("href")
@@ -63,9 +56,9 @@ def extract_data(req):
 
 	gears = w("dl#product_features dt:contains('Number of Gears:')").attr("class")
 	if gears:
-		data["gears"] = w("dl#product_features dd."+ gears).text()
+		data["gearset"] = w("dl#product_features dd."+ gears).text()
 	
-	data["type"] = w(".current_category a").text().replace(" Bikes", "")	
+	data["type"] = w(".current_category a").text().replace(" Bikes", " Bike")	
 	g_set = w("dl#product_features dt:contains('Shifters:')").attr("class")
 	if g_set:
 		data["gearset"] = w("dl#product_features dd."+ g_set).text()
@@ -74,6 +67,6 @@ def extract_data(req):
 		data["wheelset"] = w("dl#product_features dd."+ w_set).text()
 
 	available = w("div#select_and_buy_buttons a img")
-	data["availability"] = "A" if available else "O"
+	data["availability"] = "Available" if available else "Out of Stock"
 
 	return data

@@ -12,15 +12,6 @@ def extract_urls(req):
 	domain = 'http://www.bikesport.dk'
 	w = pq(req["html"])
 
-	# ugly hack for testing purposes. avoid this 'if'
-	if req["url"] == "http://www.bikesport.dk/cykler/":
-		cats = w(".amshopby-cat.amshopby-cat-level-1>a")
-
-		for item in cats:
-			item = pq(item)
-			urls.add(item.attr("href"))
-		return list(urls)
-
 	next_page = w("a.next.i-next")
 	if next_page:
 		urls.add(next_page.attr("href"))
@@ -42,6 +33,9 @@ def extract_data(req):
 		name = w(".product-name>h1>strong").text().strip()
 		if name:
 			data["name"] = name
+			year = re.search(r"(\d{4})", name)
+			if year:
+				data["year"] = year.group(1)
 		data["currency"] = "DKK"
 		image = w(".slides>li>img").eq(0).attr("src")
 		if image:
@@ -68,15 +62,30 @@ def extract_data(req):
 			if label == "Producent":
 				data["brand"] = item_data
 			if label == "Varenummer":
-				data["id"] = item_data
+				data["external_source_id"] = item_data
 			if label == "Ramme":
-				data["frame_material"] = item_data
+				data["frame"] = item_data
 			if label == "Cykel Type":
 				data["type"] = item_data
-		
 		desc = w("div.std").text().strip()
 		if desc:
 			data["description"] = desc
+		bike_sizes = w(".jqTransformSelectWrapper>ul>li")
+		sizes = dict()
+		if bike_sizes:
+			for size in bike_sizes:
+				content = w(size)
+				size_regex = re.search(r"(\d+)(\w{2})", content.text())
+				availability = content.find("img").attr("src")
+				if "stock_green" in availability:
+					available = "Available"
+				if "stock_yellow" in availabilty:
+					available = "Available to Order"
+				if "stock_red" in availability:
+					available = "Out of Stock"
+				if size_regex:
+					sizes[size_regex.group(1)] = available
+				data["size_measure"] = size_regex.group(2) if size_regex.group(2) == "cm" else "inch"
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
 		return data
