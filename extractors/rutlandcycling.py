@@ -39,6 +39,10 @@ def extract_data(req):
 		image = w(".flexsliderMIV .flex-active-slide>a").attr("href")
 		if image:
 			data["image"] = image
+		
+		brand = w("div.brandImg img").attr("alt")
+		if brand:
+			data["brand"] = brand
 		new_price = w("#ProductDetail21_pricing1_lblSalePrice").text().strip()
 		old_price = w('#ProductDetail21_pricing1_lblPrice').text().strip()
 		if old_price:
@@ -48,7 +52,31 @@ def extract_data(req):
 			data["price"] = new_price[1:].replace(",", "")
 			data["discounted_price"] = new_price[1:].replace(",", "")
 		
-		desc = w(".container").eq(1).text().strip()
+		external_source_id = w("li.store>div").eq(0).attr("title")
+		if external_source_id:
+			data["external_source_id"] = external_source_id.group(1)
+
+		availability = dict()
+		sizes = w("ul.clAttributeGrid")
+		for size in sizes:
+			item = pq(size)
+			size = item.find("li.name").text().strip()
+			available = item.find("li.stock").text().strip()
+			availability[size] = available
+		
+		data["availability"] = availability
+		
+		bike_specs = w(".container").eq(1).find("li")
+		for item in bike_specs:
+			label = pq(item).text().strip()
+			if "Frame" in label:
+				data["frame"] = label
+			if "Shifters" in label:
+				data["gearset"] = label
+			if "Tires" in label:
+				data["wheelset"] = label
+		
+		desc = w(".container.prodDesc").text().strip()
 		if desc:
 			data["description"] = desc
 	#make that > 3

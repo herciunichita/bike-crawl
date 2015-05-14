@@ -9,7 +9,7 @@ import re
 def extract_urls(req):
 	urls = set()
 
-	domain = 'http://www.westbrookcycles.co.uk'
+	domain = 'http://www.bruegelmann.de'
 	w = pq(req["html"])
 
 	next_page = w(".next_page.page_num").eq(0)
@@ -25,47 +25,70 @@ def extract_urls(req):
 
 def extract_data(req):
 	data = deepcopy(bike)
-	domain = 'http://www.westbrookcycles.co.uk'
+	domain = 'http://www.bruegelmann.de'
 	w = pq(req["html"])
 
-	is_bike = w("span#product_title")
+	is_bike = w("div#ProductsInfo h1")
 	if is_bike:
-		name = w("span#product_title").text().strip()
+		name = w("div#ProductsInfo h1").text().strip()
 		if name:
 			data["name"] = name
-		data["currency"] = "GBP"
-		image = w("a#product_zoom_image").attr("href")
+		data["currency"] = "EUR"
+		brand = ("div#ProductsInfo>a").attr("title")
+		image = w("div.center-block.box.root.active img").attr("src")
 		if image:
-			data["image"] = domain + image
-		old_price = w(".price-box p.old-price span.price").text().strip()
-		if old_price:
-			actual_price = re.match(r"(\d+\.*\d+\,\d+).*", price)
-			data["price"] = actual_price.group(1).replace(".", "").replace(",", ".")
-			disc_price = w(".price-box p.special-price span.price").text().strip()
-			disc_price = re.match(r"(\d+\.*\d+\,\d+).*", disc_price)
-			data["discounted_price"] = disc_price.group(1).replace(".", "").replace(",", ".")
+			data["image"] = image
+		new_price = w("span.smartFontBold22.red").text().strip()
+		if new_price:
+			actual_price = re.search(r"(\d+\.*\d+)\.*", price)
+			data["discounted_price"] = actual_price.group(1).replace(".", "")
+			old_price = w("span.smartFontBold22.oldPrice__invalid").text().strip()
+			disc_price = re.search(r"(\d+\.*\d+).*", disc_price)
+			data["price"] = disc_price.group(1).replace(".", "")
 		else:
-			price = w(".price-box span.regular-price").text().strip()
-			price = re.match(r"(\d+\.*\d+\,\d+).*", price)
-			data["price"] = price.group(1).replace(".", "").replace(",", ".")
-			data["discounted_price"] = price.group(1).replace(".", "").replace(",", ".")
+			price = w("span.smartFontBold22").text().strip()
+			price = re.search(r"(\d+\.*\d+).*", price)
+			data["price"] = price.group(1).replace(".", "")
+			data["discounted_price"] = price.group(1).replace(".", "")
 
-		bike_specs = w("div.specifications_block ul.data-table li")
+		external_source_id = w("span.productNo").text().strip()
+		external_source_id = re.search(r"(\d+)", external_source_id)
+		data["external_source_id"] = external_source_id.group(1)
+
+		availability = dict()
+		sizes = w("li.variation.hideItem")
+		for size in sizes:
+			item = pq(size)
+			size = item.text().split(" ")
+			if size[1] == "cm":
+				data["size_measure"] = "cm"
+			else:
+				data["size_measure"] = "inch"
+			availability[size[0]] = "Available to Order"
+
+		data["availability"] = availability
+
+		bike_specs = w("div#tabs-2 ol")
 		for item in bike_specs:
 			item = pq(item)
 			#print item
-			label = item.find('.label').text().strip()
-			item_data = item.find('.data').text().strip()
-			if label == "Producent":
-				data["brand"] = item_data
-			if label == "Varenummer":
-				data["id"] = item_data
-			if label == "Ramme":
-				data["frame_material"] = item_data
-			if label == "Cykel Type":
-				data["type"] = item_data
+			label = item.find('lh').text().strip()
+			item_data = item.find('>li').text().strip()
+			if label:
+				if "Rahmen" in label:
+					data["frame"] = item_data
+				if "Reifen" in label:
+					data["wheelset"] = item_data
+				if "Schaltung" in label:
+					data["gearset"] = item_data
+			else:
+				label = item.find('span.title').text().strip()
+				if "Einsatzzweck" in label:
+					data["type"] = item_data
+				if "Modelljahr" in label:
+					data["year"] = item_data
 		
-		desc = w("div.std").text().strip()
+		desc = w("p[itemprop='description']").text().strip()
 		if desc:
 			data["description"] = desc
 	#make that > 3

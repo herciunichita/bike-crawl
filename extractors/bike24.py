@@ -11,15 +11,6 @@ def extract_urls(req):
 	domain = 'http://www.bike24.de/'
 	w = pq(req["html"])
 
-	# ugly hack for testing purposes. avoid this 'if'
-	if req["url"] == "http://www.bike24.de/1.php?content=12;navigation=1;promotion=9;mid=0;pgc=0;menu=1000,173":
-		cats = w(".nav_3_container>a")
-
-		for item in cats:
-			item = pq(item)
-			urls.add(domain + item.attr("href"))
-		return list(urls)
-
 	last_page = w("td.contentbold[align='right']>a.contentbold:last").eq(0).text().strip()
 	current_page = w("a.redbold").eq(0)
 	if last_page:
@@ -27,12 +18,12 @@ def extract_urls(req):
 		if current_page:
 			current_page_no = int(current_page.text().strip())
 			if current_page_no < last_page_no:
-				urls.add(domain + current_page.attr("href").replace("page=" + str(current_page_no), "page=" + str(current_page_no + 1)))
+				urls.add(domain + current_page.attr("href").replace("page=" + str(current_page_no), "page=" + str(current_page_no + 1)) + + ';lang=2')
 
 	bikes = w("h1>a")
 	for item in bikes:
 		item = pq(item)
-		urls.add(domain + item.attr("href"))
+		urls.add(domain + item.attr("href")+ ';lang=2')
 	return list(urls)
 
 def extract_data(req):
@@ -55,23 +46,33 @@ def extract_data(req):
 			actual_price = re.match(r"(\d+\.*\d+\,\d+).*", old_price)
 			data["price"] = actual_price.group(1).replace(".", "").replace(",", ".")
 			data["discounted_price"] = actual_price.group(1).replace(".", "").replace(",", ".")
-			
+		availability = w("select.selectbox option")
+		size = list()
+		for item in availability:
+			content = w(item)
+			if "cm" in content.text():
+				data["size_measure"] = "cm"
+			else:
+				data["size_measure"] = "inch"
+			size.append(content.text()[:2]) 
 		bike_specs = w("table.content tbody tr")
 		for item in bike_specs:
 			item = pq(item)
 			#print item
 			label = item.find('td.pd-datasheet-label').text().strip()
 			item_data = item.find('td').eq(1).text().strip()
-			if label == "Produktname:":
+			if label == "Manufacturer:":
 				data["brand"] = item_data
-			if label == "Artikelnummer:":
+			if label == "Item Code:":
 				data["id"] = item_data
-			if label == "Rahmen:":
+			if label == "Frame:":
 				data["frame"] = item_data
-			if label == "Material:":
-				data["frame_material"] = item_data
-			if label == "Modelljahr:":
+			if label == "Tires:":
+				data["wheelset"] = item_data
+			if label == "Year:":
 				data["year"] = item_data
+			if label == "Shifter:":
+				data["gearset"] = item_data
 		
 		desc = w("div.pd-description").text().strip()
 		if desc:

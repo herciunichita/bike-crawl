@@ -10,11 +10,11 @@ domain = 'http://www.bike-discount.de'
 
 
 def extract_urls(req):
-        urls = set()
- 
-        w = pq(req["html"])
+    urls = set()
 
-	more = w("div#infinitescroll span.btn.red")
+    w = pq(req["html"])
+    
+    more = w("div#infinitescroll span.btn.red")
 
 	if more:
 		wv_id = w("body.warengruppe.warengruppe-detail").attr("data-vw-id")
@@ -42,8 +42,8 @@ def extract_urls(req):
 
 	
 def extract_data(req):
-        data = deepcopy(bike)
-        w = pq(req["html"])
+    data = deepcopy(bike)
+    w = pq(req["html"])
 
 	is_bike = w(".rightBox")
 	if not is_bike:
@@ -51,7 +51,7 @@ def extract_data(req):
 
 	data["brand"] = w("span.manufacturer").text()
 	data["name"] = w("h1.product-title meta[itemprop='name']").attr("content").strip()
-	data["id"] = w("body.artikel.artikel-detail").attr("data-vw-id")
+	data["external_source_id"] = w("body.artikel.artikel-detail").attr("data-vw-id")
 	data["currency"] = w("meta[itemprop='priceCurrency']").attr("content")
 	price = w("table.product-price tr.uvp td").text()
 	if price:
@@ -62,8 +62,27 @@ def extract_data(req):
 
 	data["image"] = domain + w("div.productimage-wrapper.responsive_image a#productimage").attr("href")
 
-	available = w("div.btn.red.input input.buy")
-	data["availability"] = "A" if available else "O"
+	available = w("div#variantselector tr.variant")
+	availability = dict()
+	for size in available:
+		content = w(size)
+		size = content.find('td.variant_text>label').text()
+		if "cm" in size:
+			data["size_measure"] = "cm"
+		else:
+			data["size_measure"] = "inch"
+		status_text = content.find('td.delivery.last').text()
+		if "In stock" in status_text:
+			availability_text = "In Stock"
+		elif "ordered for you" in status_text:
+			availability_text = "Available to Order"
+		elif "take notice of" in status_text:
+			availability_text = "Available to Order"
+		else:
+			availability_text = "Out of Stock"
+		availability[size[:2]] = availability_text
+
+	data["availability"] = availability
 
 	data["description"] = w("div.default.articletext").text().strip()
 

@@ -37,35 +37,40 @@ def extract_data(req):
 		image = w("div.prod-image-box img").attr("src")
 		if image:
 			data["image"] = domain + image
-		old_price = w(".price-box p.old-price span.price").text().strip()
-		if old_price:
-			actual_price = re.match(r"(\d+\.*\d+\,\d+).*", price)
-			data["price"] = actual_price.group(1).replace(".", "").replace(",", ".")
-			disc_price = w(".price-box p.special-price span.price").text().strip()
-			disc_price = re.match(r"(\d+\.*\d+\,\d+).*", disc_price)
-			data["discounted_price"] = disc_price.group(1).replace(".", "").replace(",", ".")
+		bike_type = w("ul#breadcrumb li").eq(2).text().strip()
+		if bike_type:
+			data["type"] = bike_type
+		old_price = w("c_product_detail_price_old").text().strip()
+		if old_price: 
+			data["price"] = old_price[1:].replace(".", "").replace(",", ".")
+			data["discounted_price"] = w("span#c_product_detail_price").text().strip().replace(".", "").replace(",", ".")
 		else:
-			price = w(".price-box span.regular-price").text().strip()
-			price = re.match(r"(\d+\.*\d+\,\d+).*", price)
-			data["price"] = price.group(1).replace(".", "").replace(",", ".")
-			data["discounted_price"] = price.group(1).replace(".", "").replace(",", ".")
+			data["discounted_price"] = w("span#c_product_detail_price").text().strip().replace(".", "").replace(",", ".")
+			data["price"] = data["discounted_price"]
 
-		bike_specs = w("div.specifications_block ul.data-table li")
+		availability = dict()
+		wheel_sizes = w("div.c_variations_button_div tr")
+		for size in wheel_sizes:
+			content = w(size).text()
+			availability[content] = "Available to Order"
+
+		data["availability"] = availability
+		bike_specs = w("div.c_tabcontainer_attribute_row")
 		for item in bike_specs:
 			item = pq(item)
 			#print item
-			label = item.find('.label').text().strip()
-			item_data = item.find('.data').text().strip()
-			if label == "Producent":
-				data["brand"] = item_data
-			if label == "Varenummer":
-				data["id"] = item_data
-			if label == "Ramme":
-				data["frame_material"] = item_data
-			if label == "Cykel Type":
-				data["type"] = item_data
+			label = item.find('.c_tabcontainer_attribute_name').text().strip()
+			item_data = item.find('.c_tabcontainer_attribute_value').text().strip()
+			if label == "Modelljahr":
+				data["year"] = item_data
+			if label == "Rahmen":
+				data["frame"] = item_data
+			if label == "Schaltwerk":
+				data["gearset"] = item_data
+			if "Reifen" in label:
+				data["wheelset"] = item_data
 		
-		desc = w("div.std").text().strip()
+		desc = w("p.text_small_normal").text().strip()
 		if desc:
 			data["description"] = desc
 	#make that > 3
