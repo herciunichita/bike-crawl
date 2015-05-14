@@ -33,39 +33,49 @@ def extract_data(req):
 		name = w("span#product_title").text().strip()
 		if name:
 			data["name"] = name
+			data["year"] = re.search(r"\d{4}", name).group(1)
 		data["currency"] = "GBP"
+		external_source_id = w("#parent_product_id").attr("value")
+		if external_source_id:
+			data["external_source_id"] = external_source_id
+
+		brand = w("#breadcrumb_container").eq(3).text().strip()
+		if brand:
+			data["brand"] = brand
+
+		availability_dict = dict()
+		availability = w("div.product_option_div select").eq(0)
+		if availability:
+			options = pq(availability).find("option")
+			for option in options:
+				item = pq(option)
+				itemtext = item.text().strip()
+				if itemtext != "Choose a Size":
+					if "Out of Stock" in itemtext:
+						size = itemtext.split("-")
+						availability_dict[size[0].strip()] = size[1].strip()
+					else:
+						availability_dict[itemtext] = "In Stock"
+
+		data["availability"] = availability_dict
+
 		image = w("a#product_zoom_image").attr("href")
 		if image:
 			data["image"] = domain + image
-		old_price = w(".price-box p.old-price span.price").text().strip()
+		old_price = w("span.product_price_was span.GBP").text().strip()
 		if old_price:
-			actual_price = re.match(r"(\d+\.*\d+\,\d+).*", price)
-			data["price"] = actual_price.group(1).replace(".", "").replace(",", ".")
-			disc_price = w(".price-box p.special-price span.price").text().strip()
-			disc_price = re.match(r"(\d+\.*\d+\,\d+).*", disc_price)
-			data["discounted_price"] = disc_price.group(1).replace(".", "").replace(",", ".")
+			actual_price = re.search(r".*(\d+\,*\d+\.\d+)", price)
+			data["price"] = actual_price.group(1).replace(",", "")
+			disc_price = w("span#product_price_sale span.GBP").text().strip()
+			disc_price = re.match(r".*(\d+\,*\d+\.\d+)", disc_price)
+			data["discounted_price"] = disc_price.group(1).replace(",", "")
 		else:
-			price = w(".price-box span.regular-price").text().strip()
-			price = re.match(r"(\d+\.*\d+\,\d+).*", price)
-			data["price"] = price.group(1).replace(".", "").replace(",", ".")
-			data["discounted_price"] = price.group(1).replace(".", "").replace(",", ".")
+			price = w("span#product_price_sale span.GBP").text().strip()
+			price = re.match(r".*(\d+\,*\d+\.\d+)", price)
+			data["price"] = price.group(1).replace(",", "")
+			data["discounted_price"] = price.group(1).replace(",", "")
 
-		bike_specs = w("div.specifications_block ul.data-table li")
-		for item in bike_specs:
-			item = pq(item)
-			#print item
-			label = item.find('.label').text().strip()
-			item_data = item.find('.data').text().strip()
-			if label == "Producent":
-				data["brand"] = item_data
-			if label == "Varenummer":
-				data["id"] = item_data
-			if label == "Ramme":
-				data["frame_material"] = item_data
-			if label == "Cykel Type":
-				data["type"] = item_data
-		
-		desc = w("div.std").text().strip()
+		desc = w("#overview_tab_content").text().strip()
 		if desc:
 			data["description"] = desc
 	#make that > 3

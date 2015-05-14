@@ -13,10 +13,12 @@ def extract_urls(req):
 	w = pq(req["html"])
 
 	next_page = w(".pagination>a:last")
-	if next_page:
-		urls.add(domain + next_page.attr("href"))
+	active = w(".pagination>a:last").attr("class")
+	if active != "active":
+		if next_page:
+			urls.add(domain + next_page.attr("href"))
 
-	bikes = w(".description>a")
+	bikes = w("#show_grid_list .description>a")
 	for item in bikes:
 		item = pq(item)
 		urls.add(domain + item.attr("href"))
@@ -25,47 +27,49 @@ def extract_urls(req):
 
 def extract_data(req):
 	data = deepcopy(bike)
-	domain = 'http://www.westbrookcycles.co.uk'
+	domain = 'http://www.chainreactioncycles.com'
 	w = pq(req["html"])
 
-	is_bike = w("span#product_title")
+	is_bike = w(".product_title h1")
 	if is_bike:
-		name = w("span#product_title").text().strip()
+		name = w(".product_title h1").text().strip()
 		if name:
 			data["name"] = name
-		data["currency"] = "GBP"
-		image = w("a#product_zoom_image").attr("href")
+			data["year"] = re.search(r"\d{4}", name).group(1)
+			data["brand"] = name.split(" ")[0]
+		data["currency"] = "EUR"
+		external_source_id = w("input.showfitguidepopup").attr(value)
+		if external_source_id:
+			data["external_source_id"] = external_source_id.replace("prod", "")
+		image = w(".s7thumb[state='selected']").attr("style")
 		if image:
-			data["image"] = domain + image
-		old_price = w(".price-box p.old-price span.price").text().strip()
+			data["image"] = re.search(r"(url\(.*\))", image).group(1).replace("url(\"", "").replace("?fit=constrain,1&wid=56&hei=56&fmt=jpg\")", "")
+		old_price = w("li.rrpamount span").text().strip()
 		if old_price:
-			actual_price = re.match(r"(\d+\.*\d+\,\d+).*", price)
-			data["price"] = actual_price.group(1).replace(".", "").replace(",", ".")
-			disc_price = w(".price-box p.special-price span.price").text().strip()
-			disc_price = re.match(r"(\d+\.*\d+\,\d+).*", disc_price)
-			data["discounted_price"] = disc_price.group(1).replace(".", "").replace(",", ".")
+			actual_price = re.search(r"(\d+\.\d+)", price)
+			data["price"] = actual_price.group(1)
+			disc_price = w("span#crc_product_rp").text().strip()
+			disc_price = re.search(r"(\d+\.\d+)", disc_price)
+			data["discounted_price"] = disc_price.group(1)
 		else:
-			price = w(".price-box span.regular-price").text().strip()
-			price = re.match(r"(\d+\.*\d+\,\d+).*", price)
-			data["price"] = price.group(1).replace(".", "").replace(",", ".")
-			data["discounted_price"] = price.group(1).replace(".", "").replace(",", ".")
+			price = w("span#crc_product_rp").text().strip()
+			price = re.search(r"(\d+\.\d+)", price)
+			data["price"] = price.group(1)
+			data["discounted_price"] = price.group(1)
 
-		bike_specs = w("div.specifications_block ul.data-table li")
-		for item in bike_specs:
-			item = pq(item)
-			#print item
-			label = item.find('.label').text().strip()
-			item_data = item.find('.data').text().strip()
-			if label == "Producent":
-				data["brand"] = item_data
-			if label == "Varenummer":
-				data["id"] = item_data
-			if label == "Ramme":
-				data["frame_material"] = item_data
-			if label == "Cykel Type":
-				data["type"] = item_data
+		availability = dict()
+		sizes = w("#FramesSize div.size_countbox")
+		for size in sizes:
+			item = pq(size)
+			outofstock = w("p.out_stock inventorystatus")
+			if outofstock:
+				availability[item.text().strip()] = "Out of Stock"
+			else:
+				availability[item.text().strip()] = "In Stock"
 		
-		desc = w("div.std").text().strip()
+		data["availability"] = availability
+
+		desc = w(".short_desc p").text().strip()
 		if desc:
 			data["description"] = desc
 	#make that > 3

@@ -25,49 +25,38 @@ def extract_urls(req):
 
 def extract_data(req):
 	data = deepcopy(bike)
-	domain = 'http://www.westbrookcycles.co.uk'
+	domain = 'http://www.cykelexperten.dk'
 	w = pq(req["html"])
 
 	is_bike = w("span#product_title")
 	if is_bike:
-		name = w("span#product_title").text().strip()
+		name = w("h1.shop-product-title").text().strip()
 		if name:
 			data["name"] = name
-		data["currency"] = "GBP"
-		image = w("a#product_zoom_image").attr("href")
+			data["year"] = re.search(r"(\d{4})", name).group(1)
+		data["currency"] = "DKK"
+		image = w("a#shop-product-main-image-link").attr("href")
 		if image:
-			data["image"] = domain + image
-		old_price = w(".price-box p.old-price span.price").text().strip()
-		if old_price:
-			actual_price = re.match(r"(\d+\.*\d+\,\d+).*", price)
+			data["image"] = image
+		new_price = w("span.shop-product-price-special").text().strip()
+		if new_price:
+			actual_price = re.match(r"(\d+\.*\d+\,\d+)", new_price)
 			data["price"] = actual_price.group(1).replace(".", "").replace(",", ".")
-			disc_price = w(".price-box p.special-price span.price").text().strip()
-			disc_price = re.match(r"(\d+\.*\d+\,\d+).*", disc_price)
+			disc_price = w("span#shop-product-price-with-tax").text().strip()
+			disc_price = re.match(r"(\d+\.*\d+\,\d+)", disc_price)
 			data["discounted_price"] = disc_price.group(1).replace(".", "").replace(",", ".")
 		else:
-			price = w(".price-box span.regular-price").text().strip()
-			price = re.match(r"(\d+\.*\d+\,\d+).*", price)
+			price = w("span#price-with-tax-value").text().strip()
+			price = re.match(r"(\d+\.*\d+\,\d+)", price)
 			data["price"] = price.group(1).replace(".", "").replace(",", ".")
 			data["discounted_price"] = price.group(1).replace(".", "").replace(",", ".")
 
-		bike_specs = w("div.specifications_block ul.data-table li")
-		for item in bike_specs:
-			item = pq(item)
-			#print item
-			label = item.find('.label').text().strip()
-			item_data = item.find('.data').text().strip()
-			if label == "Producent":
-				data["brand"] = item_data
-			if label == "Varenummer":
-				data["id"] = item_data
-			if label == "Ramme":
-				data["frame_material"] = item_data
-			if label == "Cykel Type":
-				data["type"] = item_data
-		
-		desc = w("div.std").text().strip()
+		bike_specs = w(".shop-product-description")
+		if bike_specs:
+			data["description"] = bike_specs.text().strip()
+		desc = w("shop-product-short-description").text().strip()
 		if desc:
-			data["description"] = desc
+			data["description"] += desc
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
 		return data

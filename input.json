@@ -1,6 +1,63 @@
-{"url":"http://www.winstanleysbikes.co.uk/category/336/Bikes","domain":"winstanleysbikes"}
-{"url":"http://www.evanscycles.com/categories/bikes","domain":"evanscycles"}
-{"url":"http://www.jejamescycles.co.uk/bikes-cp1.html","domain":"jejamescycles"}
-{"url":"http://www.bikesport.dk/cykler/","domain":"bikesport"}
-{"url":"http://www.bike-discount.de/en/bike","domain":"bike-discount"}
-{"url":"http://www.bike24.de/1.php?content=12;navigation=1;promotion=9;mid=0;pgc=0;menu=1000,173","domain":"bike24"}
+{"url":"http://www.winstanleysbikes.co.uk/category/1519/All_Road_Bikes","domain":"winstanleysbikes", "type":"Road Bike"}
+{"url":"http://www.winstanleysbikes.co.uk/category/4611/All_Mountain_Bikes","domain":"winstanleysbikes", "type":"Mountain Bike"}
+{"url":"http://www.winstanleysbikes.co.uk/category/1558/All_Trials_Bikes","domain":"winstanleysbikes", "type":"Trials Bike"}
+{"url":"http://www.winstanleysbikes.co.uk/category/1559/All_Triathlon_Bikes","domain":"winstanleysbikes", "type":"Triathlon Bike"}
+{"url":"http://www.winstanleysbikes.co.uk/category/6414/All_Track_Bikes","domain":"winstanleysbikes", "type":"Track Bike"}
+{"url":"http://www.winstanleysbikes.co.uk/category/1546/All_Cyclocross_Bikes","domain":"winstanleysbikes", "type":"Cross Bike"}
+
+{"url":"http://www.jejamescycles.co.uk/road-bike-cp1.html","domain":"jejamescycles", "type":"Road Bike"}
+{"url":"http://www.jejamescycles.co.uk/mountain-bike-rigid-cp1.html","domain":"jejamescycles", "type":"Mountain Bike"}
+{"url":"http://www.jejamescycles.co.uk/mountain-bike-full-suspension-cp1.html","domain":"jejamescycles", "type":"Mountain Bike"}
+{"url":"http://www.jejamescycles.co.uk/mountain-bike-front-suspension-cp1.html","domain":"jejamescycles", "type":"Mountain Bike"}
+
+{"url":"http://www.evanscycles.com/categories/bikes/road-bikes","domain":"evanscycles", "type":"Road Bike"}
+{"url":"http://www.evanscycles.com/categories/bikes/mountain-bikes","domain":"evanscycles", "type":"Mountain Bike"}
+{"url":"http://www.evanscycles.com/categories/bikes/cyclocross-bikes","domain":"evanscycles", "type":"Cross Bike"}
+{"url":"http://www.evanscycles.com/categories/bikes/triathlon-tt-bikes","domain":"evanscycles", "type":"Triathlon Bike"}
+{"url":"http://www.evanscycles.com/categories/bikes/track-bikes","domain":"evanscycles", "type":"Track Bike"}
+
+{"url":"http://www.bikesport.dk/cykler/enkeltstart-tt/","domain":"bikesport", "type":"Triathlon Bike"}
+{"url":"http://www.bikesport.dk/cykler/cross-cykler/","domain":"bikesport", "type":"Cross Bike"}
+{"url":"http://www.bikesport.dk/cykler/mountainbike-cykler-mtb/","domain":"bikesport", "type":"Mountain Bike"}
+{"url":"http://www.bikesport.dk/cykler/racercykler/","domain":"bikesport", "type":"Road Bike"}
+
+{"url":"http://www.bike-discount.de/en/shop/mountain-bikes-655","domain":"bike-discount", "type":"Mountain Bike"}
+{"url":"http://www.bike-discount.de/en/shop/trekking-cross-bikes-656/l-24","domain":"bike-discount", "type":"Cross Bike"}
+{"url":"http://www.bike-discount.de/en/road-bike","domain":"bike-discount", "type":"Road Bike"}
+
+{"url":"http://www.bike24.de/1.php?content=7;navigation=1;mid=0;pgc=0;menu=1000,173,207","domain":"bike24", "type":"Cross Bike"}
+{"url":"http://www.bike24.de/1.php?content=7;navigation=1;mid=0;pgc=0;menu=1000,173,87","domain":"bike24", "type":"Mountain Bike"}
+{"url":"http://www.bike24.de/1.php?content=7;navigation=1;mid=0;pgc=0;menu=1000,173,157","domain":"bike24", "type":"Road Bike"}
+
+{"url":"https://www.boc24.de/shop/fahrraeder/mountainbike","domain":"boc24", "type":"Mountain Bike"}
+{"url":"https://www.boc24.de/shop/fahrraeder/rennrad/rennraeder","domain":"boc24", "type":"Road Bike"}
+{"url":"https://www.boc24.de/shop/fahrraeder/rennrad/triathlonraeder","domain":"boc24", "type":"Triathlon Bike"}
+{"url":"https://www.boc24.de/shop/fahrraeder/rennrad/crossrennraeder","domain":"boc24", "type":"Cross Bike"}
+
+{"url":"http://www.bruegelmann.de/fahrraeder/mountainbike.html","domain":"bruegelmann", "type":"Mountain Bike"}
+{"url":"http://www.bruegelmann.de/fahrraeder/fully-bike-fullsuspension.html","domain":"bruegelmann", "type":"Mountain Bike"}
+{"url":"http://www.bruegelmann.de/fahrraeder/crossrad-crossbike.html","domain":"bruegelmann", "type":"Cross Bike"}
+{"url":"http://www.bruegelmann.de/fahrraeder/rennrad.html","domain":"bruegelmann", "type":"Road Bike"}
+
+{"url":"http://www.rutlandcycling.com/1149/mountain-bikes.aspx","domain":"rutlandcycling", "type":"Mountain Bike"}
+{"url":"http://www.rutlandcycling.com/1148/road-bikes.aspx","domain":"rutlandcycling", "type":"Road Bike"}
+
+{"url":"http://cykelexperten.dk/racercykler-carbon-c-id-450","domain":"cykelexperten", "type":"Road Bike"}
+{"url":"http://cykelexperten.dk/mountainbikes","domain":"cykelexperten", "type":"Mountain Bike"}
+{"url":"http://cykelexperten.dk/cykel-cross-c-id-413","domain":"cykelexperten", "type":"Cross Bike"}
+{"url":"http://cykelexperten.dk/triathlon/enkeltstart","domain":"cykelexperten", "type":"Triathlon Bike"}
+
+{"url":"http://www.westbrookcycles.co.uk/bikes-c5/road-bikes-c18","domain":"westbrookcycles", "type":"Road Bike"}
+{"url":"http://www.westbrookcycles.co.uk/bikes-c5/mountain-bikes-c17","domain":"westbrookcycles", "type":"Mountain Bike"}
+{"url":"http://www.westbrookcycles.co.uk/bikes-c5/cyclocross-bikes-c106","domain":"westbrookcycles", "type":"Cross Bike"}
+{"url":"http://www.westbrookcycles.co.uk/bikes-c5/track-bikes-c264","domain":"westbrookcycles", "type":"Track Bike"}
+
+{"url":"http://www.bikester.dk/cykler/mountainbike.html","domain":"bikester", "type":"Mountain Bike"}
+{"url":"http://www.bikester.dk/cykler/racercykel/triathlon-cykel.html","domain":"bikester", "type":"Triathlon Bike"}
+{"url":"http://www.bikester.dk/cykler/racercykel/racecykler.html","domain":"bikester", "type":"Road Bike"}
+{"url":"http://www.bikester.dk/cykler/fitnessbike-cyclocross/cyclocross-cykel.html","domain":"bikester", "type":"Cross Bike"}
+
+{"url":"http://www.chainreactioncycles.com/ro/en/cyclo-cross-bikes","domain":"chainreactioncycles", "type":"Cross Bike"}
+{"url":"http://www.chainreactioncycles.com/ro/en/mountain-bikes","domain":"chainreactioncycles", "type":"Mountain Bike"}
+{"url":"http://www.chainreactioncycles.com/ro/en/road-bikes","domain":"chainreactioncycles", "type":"Road Bike"}
+{"url":"http://www.chainreactioncycles.com/ro/en/tt-bikes","domain":"chainreactioncycles", "type":"Triathlon Bike"}
