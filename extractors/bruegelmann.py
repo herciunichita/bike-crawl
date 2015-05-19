@@ -30,9 +30,13 @@ def extract_data(req):
 
 	is_bike = w("div#ProductsInfo h1")
 	if is_bike:
+		data["provider_store"] = domain
 		name = w("div#ProductsInfo h1").text().strip()
 		if name:
 			data["name"] = name
+			year = re.search(r"(\d{4})", name)
+			if year:
+				data["year"] = year.group(1)
 		data["currency"] = "EUR"
 		brand = ("div#ProductsInfo>a").attr("title")
 		image = w("div.center-block.box.root.active img").attr("src")
@@ -73,7 +77,7 @@ def extract_data(req):
 			item = pq(item)
 			#print item
 			label = item.find('lh').text().strip()
-			item_data = item.find('>li').text().strip()
+			item_data = item.find('li').text().strip()
 			if label:
 				if "Rahmen" in label:
 					data["frame"] = item_data
@@ -81,13 +85,6 @@ def extract_data(req):
 					data["wheelset"] = item_data
 				if "Schaltung" in label:
 					data["gearset"] = item_data
-			else:
-				label = item.find('span.title').text().strip()
-				if "Einsatzzweck" in label:
-					data["type"] = item_data
-				if "Modelljahr" in label:
-					data["year"] = item_data
-		
 		desc = w("p[itemprop='description']").text().strip()
 		if desc:
 			data["description"] = desc

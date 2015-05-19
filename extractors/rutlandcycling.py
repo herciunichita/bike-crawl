@@ -32,6 +32,7 @@ def extract_data(req):
 
 	is_bike = w(".nameBox>div>h1")
 	if is_bike:
+		data["provider_store"] = domain
 		name = w(".nameBox>div>h1").text().strip()
 		if name:
 			data["name"] = name

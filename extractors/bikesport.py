@@ -30,6 +30,7 @@ def extract_data(req):
 
 	is_bike = w(".product-name>h1>strong")
 	if is_bike:
+		data["provider_store"] = domain
 		name = w(".product-name>h1>strong").text().strip()
 		if name:
 			data["name"] = name
@@ -65,8 +66,11 @@ def extract_data(req):
 				data["external_source_id"] = item_data
 			if label == "Ramme":
 				data["frame"] = item_data
-			if label == "Cykel Type":
-				data["type"] = item_data
+			if label == "Kassette":
+				data["gearset"] = item_data
+			if label == "Hjulsæt":
+				data["wheelset"] = item_data
+
 		desc = w("div.std").text().strip()
 		if desc:
 			data["description"] = desc
@@ -86,6 +90,7 @@ def extract_data(req):
 				if size_regex:
 					sizes[size_regex.group(1)] = available
 				data["size_measure"] = size_regex.group(2) if size_regex.group(2) == "cm" else "inch"
+		data["availability"] = sizes
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
 		return data

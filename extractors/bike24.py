@@ -18,7 +18,7 @@ def extract_urls(req):
 		if current_page:
 			current_page_no = int(current_page.text().strip())
 			if current_page_no < last_page_no:
-				urls.add(domain + current_page.attr("href").replace("page=" + str(current_page_no), "page=" + str(current_page_no + 1)) + + ';lang=2')
+				urls.add(domain + current_page.attr("href").replace("page=" + str(current_page_no), "page=" + str(current_page_no + 1)) + ';lang=2')
 
 	bikes = w("h1>a")
 	for item in bikes:
@@ -33,6 +33,7 @@ def extract_data(req):
 
 	is_bike = w(".pd-headline>h1")
 	if is_bike:
+		data["provider_store"] = domain
 		name = w(".pd-headline>h1").text().strip()
 		if name:
 			data["name"] = name
@@ -47,14 +48,15 @@ def extract_data(req):
 			data["price"] = actual_price.group(1).replace(".", "").replace(",", ".")
 			data["discounted_price"] = actual_price.group(1).replace(".", "").replace(",", ".")
 		availability = w("select.selectbox option")
-		size = list()
+		size = dict()
 		for item in availability:
 			content = w(item)
 			if "cm" in content.text():
 				data["size_measure"] = "cm"
 			else:
 				data["size_measure"] = "inch"
-			size.append(content.text()[:2]) 
+			size[content.text()[:2]] = "Available to Order" 
+
 		bike_specs = w("table.content tbody tr")
 		for item in bike_specs:
 			item = pq(item)
@@ -64,7 +66,7 @@ def extract_data(req):
 			if label == "Manufacturer:":
 				data["brand"] = item_data
 			if label == "Item Code:":
-				data["id"] = item_data
+				data["external_source_id"] = item_data
 			if label == "Frame:":
 				data["frame"] = item_data
 			if label == "Tires:":
@@ -77,7 +79,6 @@ def extract_data(req):
 		desc = w("div.pd-description").text().strip()
 		if desc:
 			data["description"] = desc
-		data["provider_id"] = domain
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
 		return data

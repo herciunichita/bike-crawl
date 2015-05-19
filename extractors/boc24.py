@@ -30,6 +30,8 @@ def extract_data(req):
 
 	is_bike = w("h1.prod-detail-title")
 	if is_bike:
+		data["provider_store"] = domain
+		data["external_source_id"] = w(".prod-detail-left").text().replace("(Art-Nr:", "").replace(")", "")
 		name = w("h1.prod-detail-title").text().strip()
 		if name:
 			data["name"] = name
