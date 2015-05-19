@@ -33,6 +33,7 @@ def extract_data(req):
 
 	is_bike = w("table#prod_tbl.sectionborder_main img")
 	if is_bike:
+		data["provider_store"] = domain
 		rows = w("table#item_Tbl.column_main tr")
 		for row in rows:
 			content = w(row)

@@ -59,9 +59,6 @@ def extract_data(req):
 		else:
 			data["price"] = actual_price.group(1)
 			data["discounted_price"] = actual_price.group(1)
-		bike_type = w(".info-box>a").eq(1).text()
-		if bike_type:
-			data["type"] = bike_type
 		brand = w(".info-box>a").eq(0).text()
 		if brand:
 			data["brand"] = brand

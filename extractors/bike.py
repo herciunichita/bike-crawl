@@ -14,8 +14,6 @@ bike = {
 	"gearset": "N/A",
 	"wheelset": "N/A",
 	"year": "N/A",
-	"type": "N/A", # Road - Mountain Bike - Cyclo Cross - etc
 	"size_measure": "N/A", #inch, meters, zoll,
-	"size_value": "N/A", #size
 	"description": "N/A"
 }

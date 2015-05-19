@@ -25,12 +25,15 @@ def extract_urls(req):
 def extract_data(req):
         data = deepcopy(bike)
         w = pq(req["html"])
-
+    domain = 'http://www.evanscycles.com'
 	is_bike = w(".product-page")
 	if not is_bike:
 		return {}
-
+	data["provider_store"] = domain
 	data["name"] = w("h1.main-title.product-page").text()
+	year = re.search(r"(\d{4})", w("h1.main-title.product-page").text())
+	if year:
+		data["year"] = year.group(1)
 	discount = w("div.main-title-price div.product_price_containter span.product_price")
 	price = w("div.main-title-price div.product_price_containter span.one_product_price")
 	if discount:
@@ -49,7 +52,6 @@ def extract_data(req):
 	data["description"] = w("div#product_description").text()
 	brand = w("div#product_brand_logo a").attr("href")
 	data["brand"] = brand.replace("/brands/", "") if brand else "N/A"
-	data["url"] = req["url"]
 	frame = w("dl#product_features dt:contains('Frame:')").attr("class")
 	if frame:
 		data["frame"] = w("dl#product_features dd."+ frame).text()
@@ -58,7 +60,6 @@ def extract_data(req):
 	if gears:
 		data["gearset"] = w("dl#product_features dd."+ gears).text()
 	
-	data["type"] = w(".current_category a").text().replace(" Bikes", " Bike")	
 	g_set = w("dl#product_features dt:contains('Shifters:')").attr("class")
 	if g_set:
 		data["gearset"] = w("dl#product_features dd."+ g_set).text()
@@ -66,7 +67,12 @@ def extract_data(req):
 	if w_set:
 		data["wheelset"] = w("dl#product_features dd."+ w_set).text()
 
+	availability = dict()
 	available = w("div#select_and_buy_buttons a img")
-	data["availability"] = "Available" if available else "Out of Stock"
+	sizes = w(".product_size_label")
+	for size in sizes:
+		content = pq(size)
+		availability[content.text()] = "Available to Order"
+	data["availability"] = availability
 
 	return data
