@@ -30,13 +30,18 @@ def extract_data(req):
 
 	is_bike = w(".col-sm-4.product-shop>h1")
 	if is_bike:
+		data["provider_store"] = domain
 		name = w(".col-sm-4.product-shop>h1").text().strip()
 		if name:
 			data["name"] = name
-			data["year"] = re.search(r"(\d{4})", name).group(1)
+			year = re.search(r"(\d{4})", name)
+			if year:
+				data["year"] = year.group(1)
 		data["currency"] = "GBP"
 		
 		brand = w("span.brand").text().strip()
+		if brand:
+			data["brand"] = brand
 		image = w(".product-image.no-gallery>a>img").attr("src")
 		if image:
 			data["image"] = image
@@ -49,28 +54,24 @@ def extract_data(req):
 		sizes = w("#super-product-table tbody tr")
 		for size in sizes:
 			item = pq(size)
-			size = item.find("td").eq(0)
-			size = re.search(r"(\d{2}cm)", size)
-			availability[size.group(1)] = item.find("td").eq(1).text().strip()
-			data["size_measure"] = "cm"
+			size = item.find("td").eq(0).text().strip()
+			availability[size] = item.find("td").eq(1).text().strip()
 		data["availability"] = availability
 
-		bike_type = w(".container>ul>li").eq(3).text().strip()
-		if bike_type:
-			data["type"] = bike_type
-		bike_specs = w(".product-attribute-specs-table>tbody>tr")
+		bike_specs = w("#product-attribute-specs-table>tbody>tr")
 		for item in bike_specs:
 			item = pq(item)
 			#print item
 			label = item.find('.label').text().strip()
-			item_data = item.find('.data.last').text().strip()
-			if label == "SKU / GTIN":
+			item_data = item.find('.data').text().strip()
+			print item_data
+			if "SKU" in label:
 				data["external_source_id"] = item_data
-			if label == "FRAME":
+			if "Frame" in label:
 				data["frame"] = item_data
-			if "TYRE" in label:
+			if "Tyre" in label:
 				data["wheelset"] = item_data
-			if "SHIFTERS" in label:
+			if "Shifter" in label:
 				data["gearset"] = item_data
 		desc = w(".tab-section").eq(0).text().strip()
 		if desc:

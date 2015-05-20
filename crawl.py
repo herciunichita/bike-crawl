@@ -17,14 +17,14 @@ def input():
 		yield loads(line)
 
 
-def start_crawling(start_url, domain):
+def start_crawling(start_url, domain, bike_type):
 	session = requests.Session()
 	urls = deque()
 	visited_urls = set()
 	visited_urls.add(start_url)
 	urls.append(start_url)
 	while urls:
-		data = {"domain": domain}
+		data = {"domain": domain, "type": bike_type}
 		req = dict()
 
 		url = urls.popleft()
@@ -76,6 +76,6 @@ if __name__ == '__main__':
 	sys.path.append(os.path.join(os.path.dirname(__file__), "extractors"))
 
 	for req in input():
-		start_crawling(req["url"], req["domain"])
+		start_crawling(req["url"], req["domain"], req["type"])
 
 

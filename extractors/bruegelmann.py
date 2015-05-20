@@ -12,13 +12,18 @@ def extract_urls(req):
 	domain = 'http://www.bruegelmann.de'
 	w = pq(req["html"])
 
-	next_page = w(".next_page.page_num").eq(0)
-	if next_page:
-		urls.add(next_page.attr("href"))
+	#page_num = w("#totalPages").attr("data-totalpages")
+	#if page_num:
+	#	number_of_pages = int(page_num)
+	#next_page = w(".next_page.page_num").eq(0)
+	#if next_page:
+	#	urls.add(next_page.attr("href"))
+	#http://www.bruegelmann.de/ajax/filter?intManufacturerId=0&strSearchQuery=&intActionpageId=0&intPage=%s&blnProductsArchive=&isTopSearch=&uid=0&filterProductId=&%s&intCategoryId=6420&sorting=product_topseller_desc&totalPages=%s
 
-	bikes = w("a.product_title")
+	bikes = w("a.productLink")
 	for item in bikes:
 		item = pq(item)
+		print item.attr("href")
 		urls.add(item.attr("href"))
 	return list(urls)
 

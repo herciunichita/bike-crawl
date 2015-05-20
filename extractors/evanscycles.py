@@ -41,7 +41,7 @@ def extract_data(req):
 		data["discounted_price"] = re.match(r"(\D+)([0-9\.]+)", discount.text()).group(2)
 		price = re.match(r"(\D+)([0-9\.]+)", price)
 		data["price"] = price.group(2)
-		data["currency"] = price.group(1)
+		data["currency"] = "GBP"
 	elif price:
 		price = re.match(r"(\D+)([0-9\.]+)", price.text())
                 data["price"] = price.group(2)

@@ -11,17 +11,18 @@ def extract_urls(req):
 
 	domain = 'http://www.boc24.de'
 	w = pq(req["html"])
-
-	next_page = w(".right_arrow.sprite.arrow-next").eq(0)
+	next_page = w("div.right_arrow_container a.reloadSearchContentPerAjaxLink").eq(0)
 	if next_page:
-		urls.add(next_page.attr("href"))
+		url = "https://www.boc24.de/webapp/wcs/stores/servlet/" + next_page.attr("rel")
+		print url
+		urls.add(url)
 
 	bikes = w(".product_description a")
 	for item in bikes:
 		item = pq(item)
+		print item.attr("href")
 		urls.add(item.attr("href"))
 	return list(urls)
-
 
 def extract_data(req):
 	data = deepcopy(bike)
@@ -31,17 +32,15 @@ def extract_data(req):
 	is_bike = w("h1.prod-detail-title")
 	if is_bike:
 		data["provider_store"] = domain
-		data["external_source_id"] = w(".prod-detail-left").text().replace("(Art-Nr:", "").replace(")", "")
+		data["external_source_id"] = w(".prod-detail-left").clone().children().remove().end().text().replace("(Art-Nr:", "").replace(")", "")
 		name = w("h1.prod-detail-title").text().strip()
 		if name:
 			data["name"] = name
+			data["brand"] = name.split(" ")[0]
 		data["currency"] = "EUR"
 		image = w("div.prod-image-box img").attr("src")
 		if image:
 			data["image"] = domain + image
-		bike_type = w("ul#breadcrumb li").eq(2).text().strip()
-		if bike_type:
-			data["type"] = bike_type
 		old_price = w("c_product_detail_price_old").text().strip()
 		if old_price: 
 			data["price"] = old_price[1:].replace(".", "").replace(",", ".")
@@ -54,7 +53,8 @@ def extract_data(req):
 		wheel_sizes = w("div.c_variations_button_div tr")
 		for size in wheel_sizes:
 			content = w(size).text()
-			availability[content] = "Available to Order"
+			if content != "":
+				availability[content] = "Available to Order"
 
 		data["availability"] = availability
 		bike_specs = w("div.c_tabcontainer_attribute_row")

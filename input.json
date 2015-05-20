@@ -42,6 +42,11 @@
 {"url":"http://www.rutlandcycling.com/1149/mountain-bikes.aspx","domain":"rutlandcycling", "type":"Mountain Bike"}
 {"url":"http://www.rutlandcycling.com/1148/road-bikes.aspx","domain":"rutlandcycling", "type":"Road Bike"}
 
+{"url":"http://www.wheelbase.co.uk/bikes-frames/bikes/road-bikes.html","domain":"wheelbase", "type":"Road Bike"}
+{"url":"http://www.wheelbase.co.uk/bikes-frames/bikes/mountain-bikes.html","domain":"wheelbase", "type":"Mountain Bike"}
+{"url":"http://www.wheelbase.co.uk/bikes-frames/bikes/cyclocross-bikes.html","domain":"wheelbase", "type":"Cross Bike"}
+{"url":"http://www.wheelbase.co.uk/bikes-frames/bikes/triathlon-bikes.html","domain":"wheelbase", "type":"Triathlon Bike"}
+
 {"url":"http://cykelexperten.dk/racercykler-carbon-c-id-450","domain":"cykelexperten", "type":"Road Bike"}
 {"url":"http://cykelexperten.dk/mountainbikes","domain":"cykelexperten", "type":"Mountain Bike"}
 {"url":"http://cykelexperten.dk/cykel-cross-c-id-413","domain":"cykelexperten", "type":"Cross Bike"}
