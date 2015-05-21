@@ -10,18 +10,17 @@ domain = 'http://www.bike-discount.de'
 
 
 def extract_urls(req):
-    urls = set()
+    	urls = set()
 
-    w = pq(req["html"])
+    	w = pq(req["html"])
     
-    more = w("div#infinitescroll span.btn.red")
+    	more = w("div#infinitescroll span.btn.red")
 
-	if more:
-		wv_id = w("body.warengruppe.warengruppe-detail").attr("data-vw-id")
-		if wv_id:
-			url = "http://www.bike-discount.de/json.php?service=getProductsContent&page=0&praesenz=1&vw_type=warengruppe&vw_name=detail&lang=en&pfrom=0&pto=0&vw_id={0}&order_by=ranking".format(wv_id)
-			urls.add(url)
-			return list(urls)
+	wv_id = w("body.warengruppe.warengruppe-detail").attr("data-vw-id")
+	if wv_id:
+		url = "http://www.bike-discount.de/json.php?service=getProductsContent&page=0&praesenz=1&vw_type=warengruppe&vw_name=detail&lang=en&pfrom=0&pto=0&vw_id={0}&order_by=ranking".format(wv_id)
+		urls.add(url)
+		return list(urls)
 	if len(req["html"]) < 50:
 		return list(urls)
 	try:
@@ -42,20 +41,20 @@ def extract_urls(req):
 
 	
 def extract_data(req):
-    data = deepcopy(bike)
-    w = pq(req["html"])
+    	data = deepcopy(bike)
+    	w = pq(req["html"])
 
 	is_bike = w(".rightBox")
 	if not is_bike:
 		return {}
 	data["provider_store"] = domain
-	data["brand"] = w("span.manufacturer").text()
+	data["brand"] = w("span.manufacturer:first").text()
 	data["name"] = w("h1.product-title meta[itemprop='name']").attr("content").strip()
 	data["external_source_id"] = w("body.artikel.artikel-detail").attr("data-vw-id")
 	data["currency"] = "EUR"
 	price = w("table.product-price tr.uvp td").text()
 	if price:
-		data["price"] = re.match(r"\D+([0-9,]+)", price).group(1).replace(",", ".")
+		data["price"] = re.match(r"\D+([0-9\.]+)", price).group(1).replace(",", ".")
 	else:
 		data["price"] = w("meta[itemprop='price']").attr("content")
 	data["discounted_price"] = w("meta[itemprop='price']").attr("content")
@@ -86,7 +85,7 @@ def extract_data(req):
 
 	data["description"] = w("div.default.articletext").text().strip()
 
-	year = w("div.variantMaster" + data["id"] + ".variantElement.variante div.additional-product-nos div.additional-product-no:contains('Model year:')").eq(0).text()
+	year = w("div.variantMaster" + data["external_source_id"] + ".variantElement.variante div.additional-product-nos div.additional-product-no:contains('Model year:')").eq(0).text()
 	if year:
 		data["year"] = year.replace("Model year:", "").strip()
 

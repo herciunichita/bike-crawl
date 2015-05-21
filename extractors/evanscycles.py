@@ -10,8 +10,15 @@ import re
 def extract_urls(req):
         urls = set()
 
-    domain = 'http://www.evanscycles.com'
-    w = pq(req["html"])
+        domain = 'http://www.evanscycles.com'
+        w = pq(req["html"])
+
+	cats = w("h2 a")
+
+	for item in cats:
+		item = pq(item)
+
+		urls.add(domain + item.attr("href").replace("http://www.evanscycles.com", ""))
 
 	next_page = w(".next_page:first").attr("href")
 	if next_page:
@@ -25,7 +32,8 @@ def extract_urls(req):
 def extract_data(req):
         data = deepcopy(bike)
         w = pq(req["html"])
-    domain = 'http://www.evanscycles.com'
+	domain = 'http://www.evanscycles.com'
+
 	is_bike = w(".product-page")
 	if not is_bike:
 		return {}
@@ -41,7 +49,7 @@ def extract_data(req):
 		data["discounted_price"] = re.match(r"(\D+)([0-9\.]+)", discount.text()).group(2)
 		price = re.match(r"(\D+)([0-9\.]+)", price)
 		data["price"] = price.group(2)
-		data["currency"] = price.group(1)
+		data["currency"] = "GBP"
 	elif price:
 		price = re.match(r"(\D+)([0-9\.]+)", price.text())
                 data["price"] = price.group(2)

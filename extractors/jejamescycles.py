@@ -38,9 +38,10 @@ def extract_data(req):
 	if is_bike:
 		name = w(".product-info>h1>span")
 		data["provider_store"] = domain
+		
 		if name:
 			data["name"] = name.text()
-			year = re.search(r"(\d{4})", name)
+			year = re.search(r"(\d{4})", name.text() or "")
 			if year:
 				data["year"] = year.group(1)
 		data["currency"] = "GBP"
@@ -48,6 +49,7 @@ def extract_data(req):
 		if image:
 			data["image"] = image
 		price = w("div.product-info span.price").text()
+		
 		actual_price = re.match(r".(\d+\.\d+)", price)
 		saving = w("div.product-info span.saving").text()
 		if saving:
@@ -100,6 +102,7 @@ def extract_data(req):
 				data["wheelset"] += content.text().strip().replace("N/A", "") + "\n"
 			if "Tire" in content.text():
 				data["wheelset"] += content.text().strip().replace("N/A", "") + "\n"
+			
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
 		return data
