@@ -14,13 +14,11 @@ def extract_urls(req):
 
 	next_page = w("a.next-link").eq(0)
 	if next_page:
-		print next_page.attr("href")
 		urls.add(next_page.attr("href"))
 
 	bikes = w(".shop-catalog-product-title a")
 	for item in bikes:
 		item = pq(item)
-		print item.attr("href")
 		urls.add(item.attr("href"))
 	return list(urls)
 
@@ -32,6 +30,10 @@ def extract_data(req):
 
 	is_bike = w("h1.shop-product-title")
 	if is_bike:
+		data["provider_store"] = domain
+		external_source_id = w("[name='shop_product_id']").attr("value")
+		if external_source_id:
+			data["external_source_id"] = external_source_id
 		name = w("h1.shop-product-title").text().strip()
 		if name:
 			data["name"] = name
@@ -55,12 +57,53 @@ def extract_data(req):
 			data["price"] = price.group(1).replace(".", "").replace(",", ".")
 			data["discounted_price"] = price.group(1).replace(".", "").replace(",", ".")
 
-		bike_specs = w(".shop-product-description")
+		#availability = dict()
+		#sizes = w("select#attribute_1>option")
+		#print sizes
+		#for size in sizes:
+		#	content = w(size)
+		#	if "else" not in content.text().strip():
+		#		availability[content.text().strip()] = "Available to Order"
+		#data["availability"] = availability
+		bike_specs = w(".shop-product-description p")
 		if bike_specs:
-			data["description"] = bike_specs.text().strip()
-		desc = w("shop-product-short-description").text().strip()
+			data["description"] += w(bike_specs).text().strip()
+		for spec in bike_specs:
+			content = w(spec)
+			if "FRAME" in content.text():
+				data["frame"] = content.text().strip()
+			if "REAR DERAILLEUR" in content.text():
+				data["gearset"] += content.text().strip() + "\n"
+			if "FRONT DERAILLEUR" in content.text():
+				data["gearset"] += content.text().strip() + "\n"
+			if "CHAIN" in content.text():
+				data["gearset"] += content.text().strip() + "\n"
+			if "WHEELS" in content.text():
+				data["wheelset"] += content.text().strip() + "\n"
+			if "TIRES" in content.text():
+				data["wheelset"] += content.text().strip() + "\n"
+		desc = w(".shop-product-short-description p")
 		if desc:
-			data["description"] = data["description"] + desc
+			data["description"] += w(desc).text().strip()
+		for spec in desc:
+			content = w(spec)
+			if "FRAME" in content.text():
+				data["frame"] = content.text().strip()
+			if "REAR DERAILLEUR" in content.text():
+				data["gearset"] += content.text().strip() + "\n"
+			if "FRONT DERAILLEUR" in content.text():
+				data["gearset"] += content.text().strip() + "\n"
+			if "CHAIN" in content.text():
+				data["gearset"] += content.text().strip() + "\n"
+			if "WHEELS" in content.text():
+				data["wheelset"] += content.text().strip() + "\n"
+			if "TIRES" in content.text():
+				data["wheelset"] += content.text().strip() + "\n"
+		data["wheelset"] = data["wheelset"].replace("N/A", "")
+		data["gearset"] = data["gearset"].replace("N/A", "")
+		data["frame"] = data["frame"].replace("N/A", "")
+		data["description"] = data["description"].replace("N/A", "")
+		
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
 		return data

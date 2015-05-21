@@ -14,11 +14,13 @@ def extract_urls(req):
 
 	next_page = w(".next_page.page_num").eq(0)
 	if next_page:
+		#print next_page.attr("href")
 		urls.add(next_page.attr("href"))
 
 	bikes = w("a.product_title")
 	for item in bikes:
 		item = pq(item)
+		#print item.attr("href")
 		urls.add(item.attr("href"))
 	return list(urls)
 
@@ -30,10 +32,13 @@ def extract_data(req):
 
 	is_bike = w("span#product_title")
 	if is_bike:
+		data["provider_store"] = domain
 		name = w("span#product_title").text().strip()
 		if name:
 			data["name"] = name
-			data["year"] = re.search(r"\d{4}", name).group(1)
+			year = re.search(r"(\d{4})", name)
+			if year:
+				data["year"] = year.group(1)
 		data["currency"] = "GBP"
 		external_source_id = w("#parent_product_id").attr("value")
 		if external_source_id:
@@ -47,6 +52,7 @@ def extract_data(req):
 		availability = w("div.product_option_div select").eq(0)
 		if availability:
 			options = pq(availability).find("option")
+			print options
 			for option in options:
 				item = pq(option)
 				itemtext = item.text().strip()
@@ -62,18 +68,15 @@ def extract_data(req):
 		image = w("a#product_zoom_image").attr("href")
 		if image:
 			data["image"] = domain + image
-		old_price = w("span.product_price_was span.GBP").text().strip()
+		old_price = w("span.product_price_was span.GBP").eq(0).text().strip()
 		if old_price:
-			actual_price = re.search(r".*(\d+\,*\d+\.\d+)", price)
-			data["price"] = actual_price.group(1).replace(",", "")
-			disc_price = w("span#product_price_sale span.GBP").text().strip()
-			disc_price = re.match(r".*(\d+\,*\d+\.\d+)", disc_price)
-			data["discounted_price"] = disc_price.group(1).replace(",", "")
+			data["price"] = old_price.replace(",", "")[1:]
+			disc_price = w("span#product_price_sale span.GBP").eq(0).text().strip()
+			data["discounted_price"] = disc_price.replace(",", "")[1:]
 		else:
-			price = w("span#product_price_sale span.GBP").text().strip()
-			price = re.match(r".*(\d+\,*\d+\.\d+)", price)
-			data["price"] = price.group(1).replace(",", "")
-			data["discounted_price"] = price.group(1).replace(",", "")
+			price = w("span#product_price_sale span.GBP").eq(0).text().strip()
+			data["price"] = price.replace(",", "")[1:]
+			data["discounted_price"] = price.replace(",", "")[1:]
 
 		desc = w("#overview_tab_content").text().strip()
 		if desc:
