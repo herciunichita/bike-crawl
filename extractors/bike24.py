@@ -3,6 +3,7 @@
 
 from pyquery import PyQuery as pq
 from bike import bike
+from copy import deepcopy
 import re
 
 def extract_urls(req):
@@ -18,16 +19,17 @@ def extract_urls(req):
 		if current_page:
 			current_page_no = int(current_page.text().strip())
 			if current_page_no < last_page_no:
-				urls.add(domain + current_page.attr("href").replace("page=" + str(current_page_no), "page=" + str(current_page_no + 1)) + ';lang=2')
+				url = domain + current_page.attr("href").replace("page=" + str(current_page_no), "page=" + str(current_page_no + 1)) + ';lang=2'
+				urls.add(url)
 
-	bikes = w("h1>a")
+	bikes = w(".title>a")
 	for item in bikes:
 		item = pq(item)
-		urls.add(domain + item.attr("href")+ ';lang=2')
+		urls.add(domain + item.attr("href"))
 	return list(urls)
 
 def extract_data(req):
-	data = bike
+	data = deepcopy(bike)
 	domain = 'http://www.bike24.de/'
 	w = pq(req["html"])
 
@@ -51,11 +53,9 @@ def extract_data(req):
 		size = dict()
 		for item in availability:
 			content = w(item)
-			if "cm" in content.text():
-				data["size_measure"] = "cm"
-			else:
-				data["size_measure"] = "inch"
-			size[content.text()[:2]] = "Available to Order" 
+			if "--" not in content.text():
+				size[content.text()] = "Available to Order" 
+		data["availability"] = size
 
 		bike_specs = w("table.content tbody tr")
 		for item in bike_specs:
@@ -80,6 +80,6 @@ def extract_data(req):
 		if desc:
 			data["description"] = desc
 	#make that > 3
-	if len([item for item in data if data[item] != "N/A"]) >= 1:
-		return data
+		if len([item for item in data if data[item] != "N/A"]) >= 3:
+			return data
 	return {}

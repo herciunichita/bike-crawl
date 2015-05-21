@@ -14,11 +14,13 @@ def extract_urls(req):
 
 	next_page = w("a.next-link").eq(0)
 	if next_page:
+		print next_page.attr("href")
 		urls.add(next_page.attr("href"))
 
 	bikes = w(".shop-catalog-product-title a")
 	for item in bikes:
 		item = pq(item)
+		print item.attr("href")
 		urls.add(item.attr("href"))
 	return list(urls)
 
@@ -28,12 +30,14 @@ def extract_data(req):
 	domain = 'http://www.cykelexperten.dk'
 	w = pq(req["html"])
 
-	is_bike = w("span#product_title")
+	is_bike = w("h1.shop-product-title")
 	if is_bike:
 		name = w("h1.shop-product-title").text().strip()
 		if name:
 			data["name"] = name
-			data["year"] = re.search(r"(\d{4})", name).group(1)
+			year = re.search(r"(\d{4})", name)
+			if year:
+				data["year"] = year.group(1)
 		data["currency"] = "DKK"
 		image = w("a#shop-product-main-image-link").attr("href")
 		if image:
@@ -56,7 +60,7 @@ def extract_data(req):
 			data["description"] = bike_specs.text().strip()
 		desc = w("shop-product-short-description").text().strip()
 		if desc:
-			data["description"] += desc
+			data["description"] = data["description"] + desc
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
 		return data
