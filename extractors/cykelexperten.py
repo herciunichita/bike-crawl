@@ -14,13 +14,13 @@ def extract_urls(req):
 
 	next_page = w("a.next-link").eq(0)
 	if next_page:
-		print next_page.attr("href")
+		
 		urls.add(next_page.attr("href"))
 
 	bikes = w(".shop-catalog-product-title a")
 	for item in bikes:
 		item = pq(item)
-		print item.attr("href")
+		
 		urls.add(item.attr("href"))
 	return list(urls)
 
