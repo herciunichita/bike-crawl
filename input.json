@@ -66,3 +66,8 @@
 {"url":"http://www.chainreactioncycles.com/ro/en/mountain-bikes","domain":"chainreactioncycles", "type":"Mountain Bike"}
 {"url":"http://www.chainreactioncycles.com/ro/en/road-bikes","domain":"chainreactioncycles", "type":"Road Bike"}
 {"url":"http://www.chainreactioncycles.com/ro/en/tt-bikes","domain":"chainreactioncycles", "type":"Triathlon Bike"}
+
+{"url":"http://www.bruegelmann.de/fahrraeder/mountainbike.html?page=0","domain":"bruegelmann", "type":"Mountain Bike"}
+{"url":"http://www.bruegelmann.de/fahrraeder/rennrad/triathlonrad-online-shop.html?page=0","domain":"bruegelmann", "type":"Triathlon Bike"}
+{"url":"http://www.bruegelmann.de/fahrraeder/rennrad-shop.html?page=0","domain":"bruegelmann", "type":"Road Bike"}
+{"url":"http://www.bruegelmann.de/fahrraeder/rennrad.html?page=0","domain":"bruegelmann", "type":"Cross Bike"}

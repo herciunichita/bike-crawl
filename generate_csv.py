@@ -10,10 +10,14 @@ if __name__ == '__main__':
 
 	header = set()
 	id_domain = set()
+	urls = set()
 
 	items = list()
 
 	csv_out = writer(stdout)
+
+	header = ["domain", "external_source_id", "url", "type", "name", "brand", "image","price", "discounted_price", "currency", "availability", "size_measure", "year", "frame", "gearset", "wheelset", "description"]
+	csv_out.writerow(header)
 
 	for line in stdin:
 		try:
@@ -24,32 +28,23 @@ if __name__ == '__main__':
 			continue
 		line["data"]["domain"] = line["domain"]
 		line["data"]["url"] = line["url"]
-
+		line["data"]["type"] = line["type"]
 		data = line["data"]
 
-		if (data["id"], data["domain"]) not in id_domain:
-			items.append(data)
-			id_domain.add((data["id"], data["domain"]))
+		if data["url"] not in urls:
+			urls.add(data["url"])
 		else:
-			print >>stderr, "Duplicate", (data["id"], data["domain"])
-			continue
-
-		if data["frame_material"] != "N/A" and data["frame"] == "N/A":
-			aux = data["frame_material"]
-			data["frame"] = aux
-			data["frame_material"] = "N/A"
-
-		del data["provider_id"]
-		del data["size_value"]
-		data["gears"] = "N/A" if not data.get("gears") else data["gears"]
-		for item in data:
-			if data[item] != "N/A":
-				header.add(item)
-		#items.append(data)
-	header = list(header)
-	csv_out.writerow(header)
-	for item in items:
-		row = [item.get(key) for key in header]
+			print >>stderr, data["url"]
+			#continue
+		items.append(data)
+		if (data["external_source_id"], data["domain"]) not in id_domain:
+			items.append(data)
+			id_domain.add((data["external_source_id"], data["domain"]))
+		else:
+			print >>stderr, "Duplicate", (data["external_source_id"], data["domain"])
+			continue	
+		
+		row = [data[item] for item in header]
 		csv_out.writerow(row)
 
 	

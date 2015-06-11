@@ -43,7 +43,7 @@ def extract_data(req):
 			data["image"] = image
 		old_price = w(".price-box p.old-price span.price").text().strip()
 		if old_price:
-			actual_price = re.match(r"(\d+\.*\d+\,\d+).*", price)
+			actual_price = re.match(r"(\d+\.*\d+\,\d+).*", old_price)
 			data["price"] = actual_price.group(1).replace(".", "").replace(",", ".")
 			disc_price = w(".price-box p.special-price span.price").text().strip()
 			disc_price = re.match(r"(\d+\.*\d+\,\d+).*", disc_price)
@@ -68,7 +68,7 @@ def extract_data(req):
 				data["frame"] = item_data
 			if label == "Kassette":
 				data["gearset"] = item_data
-			if label == "Hjulsæt":
+			if label == u"Hjulsæt":
 				data["wheelset"] = item_data
 
 		desc = w("div.std").text().strip()

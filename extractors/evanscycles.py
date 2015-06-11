@@ -10,8 +10,15 @@ import re
 def extract_urls(req):
         urls = set()
 
-    domain = 'http://www.evanscycles.com'
-    w = pq(req["html"])
+        domain = 'http://www.evanscycles.com'
+        w = pq(req["html"])
+
+	cats = w("h2 a")
+
+	for item in cats:
+		item = pq(item)
+
+		urls.add(domain + item.attr("href").replace("http://www.evanscycles.com", ""))
 
 	next_page = w(".next_page:first").attr("href")
 	if next_page:
@@ -25,7 +32,8 @@ def extract_urls(req):
 def extract_data(req):
         data = deepcopy(bike)
         w = pq(req["html"])
-    domain = 'http://www.evanscycles.com'
+	domain = 'http://www.evanscycles.com'
+
 	is_bike = w(".product-page")
 	if not is_bike:
 		return {}

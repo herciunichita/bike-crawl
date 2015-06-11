@@ -64,7 +64,7 @@ def extract_data(req):
 			#print item
 			label = item.find('.label').text().strip()
 			item_data = item.find('.data').text().strip()
-			print item_data
+		
 			if "SKU" in label:
 				data["external_source_id"] = item_data
 			if "Frame" in label:
