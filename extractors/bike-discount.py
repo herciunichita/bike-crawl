@@ -47,7 +47,6 @@ def extract_data(req):
 	is_bike = w(".rightBox")
 	if not is_bike:
 		return {}
-	data["provider_store"] = domain
 	data["brand"] = w("span.manufacturer:first").text()
 	data["name"] = w("h1.product-title meta[itemprop='name']").attr("content").strip()
 	data["external_source_id"] = w("body.artikel.artikel-detail").attr("data-vw-id")

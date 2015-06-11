@@ -37,7 +37,6 @@ def extract_data(req):
 	is_bike = w(".product-page")
 	if not is_bike:
 		return {}
-	data["provider_store"] = domain
 	data["name"] = w("h1.main-title.product-page").text()
 	year = re.search(r"(\d{4})", w("h1.main-title.product-page").text())
 	if year:

@@ -30,12 +30,10 @@ def extract_urls(req):
 
 def extract_data(req):
 	data = deepcopy(bike)
-	domain = 'http://www.bike24.de/'
 	w = pq(req["html"])
 
 	is_bike = w(".pd-headline>h1")
 	if is_bike:
-		data["provider_store"] = domain
 		name = w(".pd-headline>h1").text().strip()
 		if name:
 			data["name"] = name
