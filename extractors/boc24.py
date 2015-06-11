@@ -31,8 +31,13 @@ def extract_data(req):
 
 	is_bike = w("h1.prod-detail-title")
 	if is_bike:
-		data["provider_store"] = domain
-		data["external_source_id"] = w(".prod-detail-left").clone().children().remove().end().text().replace("(Art-Nr:", "").replace(")", "")
+		art_nr = w(".prod-detail-left").clone().children().remove().end().text().replace("(Art-Nr:", "").replace(")", "")
+		last_char_in_url = w("link[rel='canonical']").attr("href")[-1]
+		if last_char_in_url.isdigit() == False:
+			data["external_source_id"] = art_nr + "-" + ord(last_char_in_url)
+		else:
+			data["external_source_id"] = art_nr + "-" + last_char_in_url
+
 		name = w("h1.prod-detail-title").text().strip()
 		if name:
 			data["name"] = name
