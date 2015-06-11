@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
 	csv_out = writer(stdout)
 
-	header = ["domain", "external_source_id", "url", "type", "name", "brand", "image","price", "discounted_price", "currency", "availability", "size_measure", "year", "frame", "gearset", "wheelset", "description"]
+	header = ["external_source_id", "url", "type", "name", "brand", "image","price", "discounted_price", "currency", "availability", "size_measure", "year", "frame", "gearset", "wheelset", "description"]
 	csv_out.writerow(header)
 
 	for line in stdin:
@@ -43,7 +43,7 @@ if __name__ == '__main__':
 		else:
 			print >>stderr, "Duplicate", (data["external_source_id"], data["domain"])
 			continue	
-		
+		data["availability"] = u" - ".join(u"{0}:{1}".format(key, value) for key, value in data["availability"].iteritems())		
 		row = [data[item] for item in header]
 		csv_out.writerow(row)
 

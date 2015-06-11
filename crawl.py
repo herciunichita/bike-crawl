@@ -8,7 +8,7 @@ from pyquery import PyQuery as pq
 import requests
 import re
 import os
-import sys
+import sys, traceback
 import socket
 
 def input():
@@ -58,6 +58,7 @@ def start_crawling(start_url, domain, bike_type):
 			crawled = extractor.extract_urls(req)
 		except Exception as ex:
 			print >>sys.stderr, "URL\n", ex
+			traceback.print_exc(file=sys.stderr)
 			continue
 		for page in crawled:
 			if page not in visited_urls:
@@ -68,6 +69,7 @@ def start_crawling(start_url, domain, bike_type):
 			data["data"] = extractor.extract_data(req)
 		except Exception as ex:
 			print >>sys.stderr, "DATA\n", ex
+			traceback.print_exc(file=sys.stderr)
 			continue
 		
 		if data["data"]:

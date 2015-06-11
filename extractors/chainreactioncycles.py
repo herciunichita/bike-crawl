@@ -5,6 +5,7 @@ from pyquery import PyQuery as pq
 from bike import bike
 from copy import deepcopy
 import re
+from sys import stderr
 
 def extract_urls(req):
 	urls = set()
@@ -35,10 +36,10 @@ def extract_data(req):
 		name = w(".product_title h1").text().strip()
 		if name:
 			data["name"] = name
-			data["year"] = re.search(r"\d{4}", name).group(1)
+			data["year"] = re.search(r"(\d{4})", name).group(1) if re.search(r"(\d{4})", name) else "N/A"
 			data["brand"] = name.split(" ")[0]
 		data["currency"] = "EUR"
-		external_source_id = w("input.showfitguidepopup").attr(value)
+		external_source_id = w("input.showfitguidepopup").attr("value")
 		if external_source_id:
 			data["external_source_id"] = external_source_id.replace("prod", "")
 		image = w(".s7thumb[state='selected']").attr("style")
@@ -46,7 +47,7 @@ def extract_data(req):
 			data["image"] = re.search(r"(url\(.*\))", image).group(1).replace("url(\"", "").replace("?fit=constrain,1&wid=56&hei=56&fmt=jpg\")", "")
 		old_price = w("li.rrpamount span").text().strip()
 		if old_price:
-			actual_price = re.search(r"(\d+\.\d+)", price)
+			actual_price = re.search(r"(\d+\.\d+)", old_price)
 			data["price"] = actual_price.group(1)
 			disc_price = w("span#crc_product_rp").text().strip()
 			disc_price = re.search(r"(\d+\.\d+)", disc_price)
@@ -54,8 +55,9 @@ def extract_data(req):
 		else:
 			price = w("span#crc_product_rp").text().strip()
 			price = re.search(r"(\d+\.\d+)", price)
-			data["price"] = price.group(1)
-			data["discounted_price"] = price.group(1)
+			if price:
+				data["price"] = price.group(1)
+				data["discounted_price"] = price.group(1)
 
 		availability = dict()
 		sizes = w("#FramesSize div.size_countbox")
@@ -63,9 +65,9 @@ def extract_data(req):
 			item = pq(size)
 			outofstock = w("p.out_stock inventorystatus")
 			if outofstock:
-				availability[item.text().strip()] = "Out of Stock"
+				availability[item.text().replace('"', '').strip()] = "Out of Stock"
 			else:
-				availability[item.text().strip()] = "In Stock"
+				availability[item.text().replace('"', '').strip()] = "In Stock"
 		
 		data["availability"] = availability
 

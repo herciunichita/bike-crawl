@@ -34,11 +34,6 @@
 {"url":"https://www.boc24.de/shop/fahrraeder/rennrad/triathlonraeder","domain":"boc24", "type":"Triathlon Bike"}
 {"url":"https://www.boc24.de/shop/fahrraeder/rennrad/crossrennraeder","domain":"boc24", "type":"Cross Bike"}
 
-{"url":"http://www.bruegelmann.de/fahrraeder/mountainbike.html","domain":"bruegelmann", "type":"Mountain Bike"}
-{"url":"http://www.bruegelmann.de/fahrraeder/fully-bike-fullsuspension.html","domain":"bruegelmann", "type":"Mountain Bike"}
-{"url":"http://www.bruegelmann.de/fahrraeder/crossrad-crossbike.html","domain":"bruegelmann", "type":"Cross Bike"}
-{"url":"http://www.bruegelmann.de/fahrraeder/rennrad.html","domain":"bruegelmann", "type":"Road Bike"}
-
 {"url":"http://www.rutlandcycling.com/1149/mountain-bikes.aspx","domain":"rutlandcycling", "type":"Mountain Bike"}
 {"url":"http://www.rutlandcycling.com/1148/road-bikes.aspx","domain":"rutlandcycling", "type":"Road Bike"}
 
@@ -57,10 +52,10 @@
 {"url":"http://www.westbrookcycles.co.uk/bikes-c5/cyclocross-bikes-c106","domain":"westbrookcycles", "type":"Cross Bike"}
 {"url":"http://www.westbrookcycles.co.uk/bikes-c5/track-bikes-c264","domain":"westbrookcycles", "type":"Track Bike"}
 
-{"url":"http://www.bikester.dk/cykler/mountainbike.html","domain":"bikester", "type":"Mountain Bike"}
-{"url":"http://www.bikester.dk/cykler/racercykel/triathlon-cykel.html","domain":"bikester", "type":"Triathlon Bike"}
-{"url":"http://www.bikester.dk/cykler/racercykel/racecykler.html","domain":"bikester", "type":"Road Bike"}
-{"url":"http://www.bikester.dk/cykler/fitnessbike-cyclocross/cyclocross-cykel.html","domain":"bikester", "type":"Cross Bike"}
+{"url":"http://www.bikester.dk/cykler/mountainbike.html?page=0","domain":"bikester", "type":"Mountain Bike"}
+{"url":"http://www.bikester.dk/cykler/racercykel/triathlon-cykel.html?page=0","domain":"bikester", "type":"Triathlon Bike"}
+{"url":"http://www.bikester.dk/cykler/racercykel/racecykler.html?page=0","domain":"bikester", "type":"Road Bike"}
+{"url":"http://www.bikester.dk/cykler/fitnessbike-cyclocross/cyclocross-cykel.html?page=0","domain":"bikester", "type":"Cross Bike"}
 
 {"url":"http://www.chainreactioncycles.com/ro/en/cyclo-cross-bikes","domain":"chainreactioncycles", "type":"Cross Bike"}
 {"url":"http://www.chainreactioncycles.com/ro/en/mountain-bikes","domain":"chainreactioncycles", "type":"Mountain Bike"}
