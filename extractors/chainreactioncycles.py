@@ -71,6 +71,19 @@ def extract_data(req):
 		
 		data["availability"] = availability
 
+		specs = w(".short_desc li")
+		tech_specs = str()
+		for item in specs:
+			content = w(item)
+			tech_specs += content.text().strip() + "||"
+			if "Frame" in content.text():
+				data["frame"] = content.text().strip()
+			elif "Tyres" in content.text():
+				data["wheelset"] = content.text().strip()
+			elif "Cassette" in content.text():
+				data["gearset"] = value
+
+		data["tech_specs"] = tech_specs
 		desc = w(".short_desc p").text().strip()
 		if desc:
 			data["description"] = desc
