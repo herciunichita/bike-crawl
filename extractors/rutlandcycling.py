@@ -67,8 +67,10 @@ def extract_data(req):
 		data["availability"] = availability
 		
 		bike_specs = w(".container").eq(1).find("li")
+		tech_specs = str()
 		for item in bike_specs:
 			label = pq(item).text().strip()
+			tech_specs += label + "||"
 			if "Frame" in label:
 				data["frame"] = label
 			if "Shifters" in label:
@@ -76,6 +78,7 @@ def extract_data(req):
 			if "Tires" in label:
 				data["wheelset"] = label
 		
+		data["tech_specs"] = tech_specs
 		desc = w(".container.prodDesc").text().strip()
 		if desc:
 			data["description"] = desc

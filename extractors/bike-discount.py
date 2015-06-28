@@ -89,16 +89,18 @@ def extract_data(req):
 		data["year"] = year.replace("Model year:", "").strip()
 
 	attrs = w("div.articleattributes table.multieigenschaften.datagrid tr")
+	tech_specs = str()
 	for item in attrs:
 		item = pq(item)
 		name = item.find(".name").text().strip()
 		value = item.find(".value").text()
-	
+		tech_specs += name + ":" + value + "||"
 		if name == "Frame":
 			data["frame"] = value
 		elif name == "Wheelset":
 			data["wheelset"] = value
 		elif name == "Cassette":
 			data["gearset"] = value
+	data["tech_specs"] = tech_specs
 	
 	return data

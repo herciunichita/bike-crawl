@@ -78,10 +78,12 @@ def extract_data(req):
 		data["availability"] = availability	
 
 		bike_specs = w("div#tabs-2 ol")
+		tech_specs = str()
 		for item in bike_specs:
 			item = pq(item)
 			label = item.find('lh').text().strip()
-			item_data = item.find('ul li').text().strip() or item.find('li').text().strip()		
+			item_data = item.find('ul li').text().strip() or item.find('li').text().strip()	
+			tech_specs += label + ":" + item_data + "||"	
 			if label:
 				if "Rahmen" in label:
 					data["frame"] = item_data
@@ -98,6 +100,7 @@ def extract_data(req):
 					data["type"] = item_data
 				if u"Modelljahr" in label:
 					data["year"] = item_data
+		data["tech_specs"] = tech_specs
 			
 		desc = w("p[itemprop='description']").text().strip()
 		if desc:

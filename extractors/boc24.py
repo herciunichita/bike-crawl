@@ -63,11 +63,14 @@ def extract_data(req):
 
 		data["availability"] = availability
 		bike_specs = w("div.c_tabcontainer_attribute_row")
+		tech_specs = str()
 		for item in bike_specs:
+
 			item = pq(item)
 			#print item
 			label = item.find('.c_tabcontainer_attribute_name').text().strip()
 			item_data = item.find('.c_tabcontainer_attribute_value').text().strip()
+			tech_specs += label + item_data + "||"
 			if label == "Modelljahr":
 				data["year"] = item_data
 			if label == "Rahmen":
@@ -76,6 +79,7 @@ def extract_data(req):
 				data["gearset"] = item_data
 			if "Reifen" in label:
 				data["wheelset"] = item_data
+		data["tech_specs"] = tech_specs
 		
 		desc = w("p.text_small_normal").text().strip()
 		if desc:

@@ -67,8 +67,10 @@ def extract_data(req):
 		bike_specs = w(".shop-product-description p")
 		if bike_specs:
 			data["description"] += w(bike_specs).text().strip()
+		tech_specs = str()
 		for spec in bike_specs:
 			content = w(spec)
+			tech_specs += content.text().strip() + "||"
 			if "FRAME" in content.text():
 				data["frame"] = content.text().strip()
 			if "REAR DERAILLEUR" in content.text():
@@ -102,7 +104,7 @@ def extract_data(req):
 		data["gearset"] = data["gearset"].replace("N/A", "")
 		data["frame"] = data["frame"].replace("N/A", "")
 		data["description"] = data["description"].replace("N/A", "")
-		
+		data["tech_specs"] = tech_specs
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
 		return data

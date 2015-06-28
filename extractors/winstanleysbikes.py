@@ -72,16 +72,25 @@ def extract_data(req):
 			data["image"] = domain + image
 		bike_descriptions = w("td.column_main>li")
 		bike_text = str()
+		tech_specs = str()
 		for description in bike_descriptions:
 			description = pq(description)
+			tech_specs += description.text().strip() + "||"
 			if "Frame" in description.text():
-				data["frame"] = description.text().replace("\t", "").split(":")[1].strip()
+				frame = description.text().strip().replace("\t", "").split(":")
+				if len(frame) > 1:
+					data["frame"] = frame[1]
 			if "Wheelset" in description.text():
-				data["wheelset"] = description.text().replace("\t", "").split(":")[1].strip()
+				wheelset = description.text().strip().replace("\t", "").split(":")
+				if len(wheelset) > 1:
+					data["wheelset"] = wheelset[1]
 			if "Shifters" in description.text():
-				data["gearset"] = description.text().replace("\t", "").split(":")[1].strip()
+				gearset = description.text().strip().replace("\t", "").split(":")
+				if len(gearset) > 1:
+					data["gearset"] = gearset[1]
 			bike_text = bike_text + description.text().replace("\t", "") + ". "
 		data["description"] = bike_text
+		data["tech_specs"] = tech_specs
 
 
 	#make that > 3

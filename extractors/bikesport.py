@@ -54,11 +54,13 @@ def extract_data(req):
 			data["discounted_price"] = price.group(1).replace(".", "").replace(",", ".")
 
 		bike_specs = w("div.specifications_block ul.data-table li")
+		tech_specs = str()
 		for item in bike_specs:
 			item = pq(item)
 			#print item
 			label = item.find('.label').text().strip()
 			item_data = item.find('.data').text().strip()
+			tech_specs += label + item_data + "||"
 			if label == "Producent":
 				data["brand"] = item_data
 			if label == "Varenummer":
@@ -69,6 +71,8 @@ def extract_data(req):
 				data["gearset"] = item_data
 			if label == u"Hjulsæt":
 				data["wheelset"] = item_data
+
+		data["tech_specs"] = tech_specs
 
 		desc = w("div.std").text().strip()
 		if desc:

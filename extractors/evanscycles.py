@@ -59,6 +59,13 @@ def extract_data(req):
 	data["description"] = w("div#product_description").text()
 	brand = w("div#product_brand_logo a").attr("href")
 	data["brand"] = brand.replace("/brands/", "") if brand else "N/A"
+	label = w("dl#product_features dt")
+	data = w("dl#product_features dl")
+	tech_specs = str()
+	for item_label, item_data in zip(label, data):
+		tech_specs += w(item_label).text().strip() + w(item_data).text().strip() + "||"
+
+	data["tech_specs"] = tech_specs
 	frame = w("dl#product_features dt:contains('Frame:')").attr("class")
 	if frame:
 		data["frame"] = w("dl#product_features dd."+ frame).text()

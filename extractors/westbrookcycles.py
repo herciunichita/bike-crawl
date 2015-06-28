@@ -77,6 +77,19 @@ def extract_data(req):
 			data["price"] = price.replace(",", "")[1:]
 			data["discounted_price"] = price.replace(",", "")[1:]
 
+		tech_specs = str()
+		specs = w("#overview_tab_content li")
+		for item in specs:
+			content = w(item)
+			tech_specs += content.text().strip() + "||"
+			if "frame" in content.text().strip().lower():
+				data["frame"] = content.text().strip()
+			if "wheel" in content.text().strip().lower():
+				data["wheelset"] = content.text().strip()
+			if "derailleur" in content.text().strip().lower():
+				data["gearset"] = content.text().strip()
+
+		data["tech_specs"] = tech_specs
 		desc = w("#overview_tab_content").text().strip()
 		if desc:
 			data["description"] = desc

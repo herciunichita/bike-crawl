@@ -58,12 +58,13 @@ def extract_data(req):
 		data["availability"] = availability
 
 		bike_specs = w("#product-attribute-specs-table>tbody>tr")
+		tech_specs = str()
 		for item in bike_specs:
 			item = pq(item)
 			#print item
 			label = item.find('.label').text().strip()
 			item_data = item.find('.data').text().strip()
-		
+			tech_specs += label + ":" + item_data + "||"
 			if "SKU" in label:
 				data["external_source_id"] = item_data
 			if "Frame" in label:
@@ -72,6 +73,7 @@ def extract_data(req):
 				data["wheelset"] = item_data
 			if "Shifter" in label:
 				data["gearset"] = item_data
+		data["tech_specs"] = tech_specs
 		desc = w(".tab-section").eq(0).text().strip()
 		if desc:
 			data["description"] = desc

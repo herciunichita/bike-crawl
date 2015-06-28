@@ -1,5 +1,4 @@
 # dict with all the datapoints
-#TODO add the rest of them
 bike = {
 	"provider_store": "N/A", #usually domain
 	"external_source_id": "N/A", #id of bike on each website
@@ -15,5 +14,6 @@ bike = {
 	"wheelset": "N/A",
 	"year": "N/A",
 	"size_measure": "N/A", #inch, meters, zoll,
-	"description": "N/A"
+	"description": "N/A",
+	"tech_specs": "N/A"
 }

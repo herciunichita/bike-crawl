@@ -54,13 +54,14 @@ def extract_data(req):
 			if "--" not in content.text():
 				size[content.text()] = "Available to Order" 
 		data["availability"] = size
-
+		tech_specs = str()
 		bike_specs = w("table.content tbody tr")
 		for item in bike_specs:
 			item = pq(item)
 			#print item
 			label = item.find('td.pd-datasheet-label').text().strip()
 			item_data = item.find('td').eq(1).text().strip()
+			tech_specs += label + item_data + "||"
 			if label == "Manufacturer:":
 				data["brand"] = item_data
 			if label == "Item Code:":
@@ -73,7 +74,7 @@ def extract_data(req):
 				data["year"] = item_data
 			if label == "Shifter:":
 				data["gearset"] = item_data
-		
+		data["tech_specs"] = tech_specs
 		desc = w("div.pd-description").text().strip()
 		if desc:
 			data["description"] = desc

@@ -67,13 +67,14 @@ def extract_data(req):
 					availability[size] = "Out of Stock"
 		data["availability"] = availability
 
+		tech_specs = str()
 		bike_specs = w("table.product-attributes tr")
 		for item in bike_specs:
 			item = pq(item)
 			#print item
 			label = item.find('th').text().strip()
 			item_data = item.find('tr').text().strip()
-		
+			tech_specs += label + item_data + "||"
 			if "Model Year" in label:
 				data["year"] = item_data
 			if "Frame" in label:
@@ -87,7 +88,7 @@ def extract_data(req):
 		data["gearset"] = data["gearset"].replace("N/A", "")
 		data["wheelset"] = data["gearset"].replace("N/A", "")
 		data["gearset"] = data["gearset"].replace("N/A", "")
-		
+		data["tech_specs"] = tech_specs
 		desc = w("div.proddesc").text().strip()
 		if desc:
 			data["description"] = desc

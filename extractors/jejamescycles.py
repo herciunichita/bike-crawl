@@ -85,8 +85,10 @@ def extract_data(req):
 		if desc:
 			data["description"] = desc
 		specs = w("div.specification ul li")
+		tech_specs = str()
 		for spec in specs:
 			content = w(spec)
+			tech_specs += content.text().strip() + "||"
 			if "Frame" in content.text():
 				data["frame"] = content.text().replace("Frame", "").strip()
 			if "Shifters" in content.text():
@@ -101,7 +103,7 @@ def extract_data(req):
 				data["wheelset"] += content.text().strip().replace("N/A", "") + "\n"
 			if "Tire" in content.text():
 				data["wheelset"] += content.text().strip().replace("N/A", "") + "\n"
-			
+		data["tech_specs"] = tech_specs
 	#make that > 3
 	if len([item for item in data if data[item] != "N/A"]) >= 1:
 		return data
