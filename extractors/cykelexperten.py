@@ -12,11 +12,11 @@ def extract_urls(req):
 	domain = 'http://www.cykelexperten.dk'
 	w = pq(req["html"])
 
-	next_page = w("a.next-link").eq(0)
+	next_page = w("a.next").eq(0)
 	if next_page:
 		urls.add(next_page.attr("href"))
 
-	bikes = w(".shop-catalog-product-title a")
+	bikes = w("a.product-image")
 	for item in bikes:
 		item = pq(item)
 		urls.add(item.attr("href"))
@@ -28,77 +28,61 @@ def extract_data(req):
 	domain = 'http://www.cykelexperten.dk'
 	w = pq(req["html"])
 
-	is_bike = w("h1.shop-product-title")
+	is_bike = w(".product-name h1")
 	if is_bike:
-		external_source_id = w("[name='shop_product_id']").attr("value")
+		external_source_id = w("input[name='product']").attr("value")
 		if external_source_id:
 			data["external_source_id"] = external_source_id
-		name = w("h1.shop-product-title").text().strip()
+		name = w(".product-name h1").text().strip()
 		if name:
 			data["name"] = name
+			data["brand"] = name.split(" ")[0]
 			year = re.search(r"(\d{4})", name)
 			if year:
 				data["year"] = year.group(1)
 		data["currency"] = "DKK"
-		image = w("a#shop-product-main-image-link").attr("href")
+		image = w("p.product-image a").attr("href")
 		if image:
 			data["image"] = image
-		new_price = w("span.shop-product-price-special").text().strip()
+		new_price = w("p.special-price span.price").text().strip()
 		if new_price:
-			actual_price = re.match(r"(\d+\.*\d+\,\d+)", new_price)
-			data["price"] = actual_price.group(1).replace(".", "").replace(",", ".")
-			disc_price = w("span#shop-product-price-with-tax").text().strip()
-			disc_price = re.match(r"(\d+\.*\d+\,\d+)", disc_price)
-			data["discounted_price"] = disc_price.group(1).replace(".", "").replace(",", ".")
+			data["price"] = new_price.replace(",", "").replace(".", "")[:-5]
+			disc_price = w("p.old-price span.price").text().strip()
+			disc_price = disc_price.replace(",", "").replace(".", "")[:-5]
+			data["discounted_price"] = disc_price
 		else:
-			price = w("span#price-with-tax-value").text().strip()
-			price = re.match(r"(\d+\.*\d+\,\d+)", price)
-			data["price"] = price.group(1).replace(".", "").replace(",", ".")
-			data["discounted_price"] = price.group(1).replace(".", "").replace(",", ".")
-
-		#availability = dict()
-		#sizes = w("select#attribute_1>option")
-		#print sizes
-		#for size in sizes:
-		#	content = w(size)
-		#	if "else" not in content.text().strip():
-		#		availability[content.text().strip()] = "Available to Order"
-		#data["availability"] = availability
-		bike_specs = w(".shop-product-description p")
+			price = w("span.regular-price span.price").text().strip()
+			price = price.replace(",", "").replace(".", "")[:-5]
+			data["price"] = price
+			data["discounted_price"] = price
+		
+		availability = dict()
+		sizes = w("select option")
+		print sizes
+		for size in sizes:
+			content = w(size)
+			if "venligst" not in content.text().strip():
+				availability[content.text().strip()] = "Available to Order"
+		
+		data["availability"] = availability
+		bike_specs = w("div.std p span")
 		if bike_specs:
 			data["description"] += w(bike_specs).text().strip()
 		tech_specs = str()
 		for spec in bike_specs:
 			content = w(spec)
 			tech_specs += content.text().strip() + "||"
-			if "FRAME" in content.text():
+			if "frame" in content.text().lower():
 				data["frame"] = content.text().strip()
-			if "REAR DERAILLEUR" in content.text():
+			if "rear derailleur" in content.text().lower():
 				data["gearset"] += content.text().strip() + "\n"
-			if "FRONT DERAILLEUR" in content.text():
+			if "front derailleur" in content.text().lower():
 				data["gearset"] += content.text().strip() + "\n"
-			if "CHAIN" in content.text():
+			if "chain" in content.text().lower():
 				data["gearset"] += content.text().strip() + "\n"
-			if "WHEELS" in content.text():
+			if "wheels" in content.text().lower():
 				data["wheelset"] += content.text().strip() + "\n"
-			if "TIRES" in content.text():
-				data["wheelset"] += content.text().strip() + "\n"
-		desc = w(".shop-product-short-description p")
-		if desc:
-			data["description"] += w(desc).text().strip()
-		for spec in desc:
-			content = w(spec)
-			if "FRAME" in content.text():
-				data["frame"] = content.text().strip()
-			if "REAR DERAILLEUR" in content.text():
-				data["gearset"] += content.text().strip() + "\n"
-			if "FRONT DERAILLEUR" in content.text():
-				data["gearset"] += content.text().strip() + "\n"
-			if "CHAIN" in content.text():
-				data["gearset"] += content.text().strip() + "\n"
-			if "WHEELS" in content.text():
-				data["wheelset"] += content.text().strip() + "\n"
-			if "TIRES" in content.text():
+			if "tires" in content.text().lower():
 				data["wheelset"] += content.text().strip() + "\n"
 		data["wheelset"] = data["wheelset"].replace("N/A", "")
 		data["gearset"] = data["gearset"].replace("N/A", "")
